@@ -7,10 +7,12 @@ target/
 
 # Tauri
 src-tauri/target/
+src-tauri/gen/
 
 # Environment
 .env
 .env.local
+*.env.local
 
 # Editor
 .vscode/
@@ -25,6 +27,10 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Secrets / generated icons (binary)
+src-tauri/icons/icon.ico
+src-tauri/icons/icon.icns
 
 # Task briefs (internal only)
 TASK_*.md

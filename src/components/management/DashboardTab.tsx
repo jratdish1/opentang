@@ -114,11 +114,6 @@ export default function DashboardTab() {
   async function runQuickAction(action: "restart" | "stop" | "update") {
     setActionBusy(true);
     try {
-      const args: Record<string, string[]> = {
-        restart: ["compose", "restart"],
-        stop: ["compose", "stop"],
-        update: ["compose", "pull"],
-      };
       // We call docker compose directly via the existing install commands
       // For simplicity, we re-fetch status after a brief delay
       if (action === "update") {

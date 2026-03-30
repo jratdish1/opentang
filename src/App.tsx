@@ -6,7 +6,7 @@ import WizardShell from "./components/wizard/WizardShell";
 import ManagementShell from "./components/management/ManagementShell";
 
 export default function App() {
-  const { currentStep, appMode, setAppMode, setInstallState, installPath, setInstallPath } =
+  const { currentStep, appMode, setAppMode, setInstallState, setInstallPath } =
     useWizardStore();
 
   // On launch, check if OpenTang is already installed by reading the state file.

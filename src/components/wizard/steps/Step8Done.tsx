@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { openUrl } from "@tauri-apps/plugin-opener";
 import {
-  CheckCircle, ExternalLink, RotateCcw, PlusCircle, BookOpen,
-  Package, XCircle, Loader, AlertTriangle,
+  CheckCircle, ExternalLink, RotateCcw, BookOpen,
+  XCircle, Loader, AlertTriangle,
 } from "lucide-react";
 import { useWizardStore, ServiceStatus, InstallState } from "../../../store/useWizardStore";
 import { Button } from "../../shared/Button";
