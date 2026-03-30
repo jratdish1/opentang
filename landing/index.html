@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenTang — Your stack. Your rules.</title>
+  <meta name="description" content="The open-source, cross-platform desktop app that bootstraps your self-hosted AI and developer infrastructure in minutes.">
+  <meta property="og:title" content="OpenTang — Your stack. Your rules.">
+  <meta property="og:description" content="Self-hosted AI + developer environment bootstrapper. Homebrew meets Docker Desktop meets an AI-native App Store.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://opentang.koba42.com">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OpenTang — Your stack. Your rules.">
+  <meta name="twitter:description" content="Self-hosted AI + developer environment bootstrapper. Open source. Cross-platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary-900: #7C2D00;
+      --primary-700: #C24E00;
+      --primary-600: #EA6300;
+      --primary-500: #F97316;
+      --primary-400: #FB923C;
+      --primary-300: #FDBA74;
+      --primary-200: #FED7AA;
+      --primary-100: #FFF7ED;
+      --bg-deep: #0A0A0B;
+      --bg-base: #111113;
+      --bg-elevated: #1A1A1E;
+      --bg-overlay: #242428;
+      --border: #2E2E34;
+      --border-subtle: #1E1E22;
+      --text-primary: #F8F8F8;
+      --text-secondary: #A0A0A8;
+      --text-muted: #606068;
+      --success: #22C55E;
+      --info: #3B82F6;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* === NAV === */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 24px;
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary-500);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo span { color: var(--text-primary); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 150ms;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-cta {
+      background: var(--primary-500) !important;
+      color: var(--bg-deep) !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: background 150ms !important;
+    }
+    .nav-cta:hover { background: var(--primary-400) !important; }
+
+    /* === HERO === */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+    .hero-badge .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .hero h1 {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      max-width: 800px;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-300));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin-bottom: 48px;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--primary-500);
+      color: var(--bg-deep);
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 150ms;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: var(--primary-400);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.3);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text-primary);
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: all 150ms;
+    }
+    .btn-secondary:hover {
+      border-color: var(--primary-500);
+      color: var(--primary-400);
+    }
+    .hero-meta {
+      margin-top: 48px;
+      display: flex;
+      gap: 32px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+    /* === SECTIONS === */
+    section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 120px 24px;
+    }
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--primary-500);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin-bottom: 64px;
+      line-height: 1.7;
+    }
+
+    /* === FEATURES === */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      transition: all 200ms;
+    }
+    .feature-card:hover {
+      border-color: var(--primary-700);
+      transform: translateY(-2px);
+    }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      background: rgba(249, 115, 22, 0.1);
+    }
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* === STACK TABLE === */
+    .stack-section { text-align: center; }
+    .stack-section .section-desc { margin-left: auto; margin-right: auto; }
+    .stack-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .stack-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      transition: border-color 200ms;
+    }
+    .stack-item:hover { border-color: var(--primary-700); }
+    .stack-item .name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+    .stack-item .purpose {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .stack-item .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .badge-core { background: rgba(249, 115, 22, 0.15); color: var(--primary-400); }
+    .badge-rec { background: rgba(34, 197, 94, 0.12); color: var(--success); }
+    .badge-opt { background: rgba(59, 130, 246, 0.12); color: var(--info); }
+
+    /* === WIZARD === */
+    .wizard-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .wizard-step {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-500);
+      background: rgba(249, 115, 22, 0.1);
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .wizard-step h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .wizard-step p { font-size: 13px; color: var(--text-secondary); }
+
+    /* === DOWNLOAD === */
+    .download-section {
+      text-align: center;
+      background: var(--bg-base);
+      border-top: 1px solid var(--border-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .download-section .section-desc { margin-left: auto; margin-right: auto; }
+    .download-cards {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    .download-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 40px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: all 200ms;
+      min-width: 200px;
+    }
+    .download-card:hover {
+      border-color: var(--primary-500);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.15);
+    }
+    .download-card .os-icon { font-size: 36px; margin-bottom: 12px; }
+    .download-card .os-name { font-size: 16px; font-weight: 600; }
+    .download-card .os-format { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .prereq-note {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .prereq-note a { color: var(--primary-400); text-decoration: underline; }
+
+    /* === CTA === */
+    .cta-section {
+      text-align: center;
+      padding: 120px 24px;
+    }
+    .cta-section h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .cta-section p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* === FOOTER === */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-links {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 150ms;
+    }
+    .footer-links a:hover { color: var(--primary-400); }
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .footer-copy a { color: var(--primary-500); text-decoration: none; }
+
+    /* === MOBILE === */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero { padding: 100px 20px 60px; }
+      .hero-meta { flex-direction: column; gap: 12px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stack-grid { grid-template-columns: repeat(2, 1fr); }
+      .download-cards { flex-direction: column; align-items: center; }
+      section { padding: 80px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">🔶 Open<span>Tang</span></a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#stack">Stack</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#download">Download</a>
+        <a href="https://github.com/Koba42Corp/opentang" target="_blank">GitHub</a>
+        <a href="https://github.com/Koba42Corp/opentang/releases/latest" class="nav-cta">Download</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Open Source · Apache 2.0
+    </div>
+    <h1>Your stack.<br><span class="highlight">Your rules.</span></h1>
+    <p>The open-source desktop app that bootstraps your complete self-hosted AI and developer infrastructure in minutes — not days.</p>
+    <div class="hero-actions">
+      <a href="https://github.com/Koba42Corp/opentang/releases/latest" class="btn-primary">
+        ⬇ Download OpenTang
+      </a>
+      <a href="https://github.com/Koba42Corp/opentang" target="_blank" class="btn-secondary">
+        ⭐ View on GitHub
+      </a>
+    </div>
+    <div class="hero-meta">
+      <span>🖥️ Windows · macOS · Linux</span>
+      <span>🐳 Docker-powered</span>
+      <span>🔒 Secure by default</span>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need. Nothing you don't.</h2>
+    <p class="section-desc">Homebrew meets Docker Desktop meets an AI-native App Store. One installer to rule them all.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧙</div>
+        <h3>Step-by-Step Wizard</h3>
+        <p>Guided setup from system check to running services. No YAML required. No terminal gymnastics.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI-First</h3>
+        <p>Install OpenClaw, Hermes, or NanoClaw with one click. Add local LLMs via Ollama or bring your own API key.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🐳</div>
+        <h3>Docker-Powered</h3>
+        <p>Everything runs in containers. Docker Compose generated dynamically from your selections. Clean, portable, reproducible.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Secure by Default</h3>
+        <p>Auto-generated strong credentials. Traefik + Let's Encrypt SSL. Secrets never leave your machine.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📦</div>
+        <h3>In-App Store</h3>
+        <p>Install, update, and remove services after setup. Browse official and community packages. One-click management.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <h3>Any Network</h3>
+        <p>Localhost dev, LAN home server, or internet-facing with auto SSL. OpenTang adapts to your setup.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack" class="stack-section">
+    <div class="section-label">Included Stack</div>
+    <h2 class="section-title">Your full infrastructure, one click away</h2>
+    <p class="section-desc">Core services installed automatically. Recommended defaults you can customize. Optional add-ons from the App Store.</p>
+    <div class="stack-grid">
+      <div class="stack-item">
+        <div class="badge badge-core">Core</div>
+        <div class="name">Coolify</div>
+        <div class="purpose">Self-hosted PaaS</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-core">Core</div>
+        <div class="name">Traefik</div>
+        <div class="purpose">Reverse proxy + SSL</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-rec">Recommended</div>
+        <div class="name">OpenClaw</div>
+        <div class="purpose">AI agent system</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-rec">Recommended</div>
+        <div class="name">Ollama</div>
+        <div class="purpose">Local LLM runtime</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-rec">Recommended</div>
+        <div class="name">Gitea</div>
+        <div class="purpose">Private Git server</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-rec">Recommended</div>
+        <div class="name">Portainer</div>
+        <div class="purpose">Docker management</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-rec">Recommended</div>
+        <div class="name">Grafana</div>
+        <div class="purpose">Monitoring dashboards</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-rec">Recommended</div>
+        <div class="name">Prometheus</div>
+        <div class="purpose">Metrics collection</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-opt">Optional</div>
+        <div class="name">n8n</div>
+        <div class="purpose">Workflow automation</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-opt">Optional</div>
+        <div class="name">Vaultwarden</div>
+        <div class="purpose">Password manager</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-opt">Optional</div>
+        <div class="name">Uptime Kuma</div>
+        <div class="purpose">Uptime monitoring</div>
+      </div>
+      <div class="stack-item">
+        <div class="badge badge-opt">Optional</div>
+        <div class="name">+ More</div>
+        <div class="purpose">via App Store</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">From zero to running in 9 steps</h2>
+    <p class="section-desc">OpenTang walks you through everything. System checks, package selection, credentials, deployment — all handled.</p>
+    <div class="wizard-steps">
+      <div class="wizard-step">
+        <div class="step-num">1</div>
+        <div>
+          <h4>Welcome</h4>
+          <p>Launch OpenTang and hit "Begin Setup"</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">2</div>
+        <div>
+          <h4>System Check</h4>
+          <p>Auto-detects OS, Docker, RAM, disk. Fixes missing deps</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">3</div>
+        <div>
+          <h4>Choose Edition</h4>
+          <p>NanoClaw, Hermes, or OpenClaw — pick your tier</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">4</div>
+        <div>
+          <h4>LLM Config</h4>
+          <p>Install Ollama locally or enter your cloud API key</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">5</div>
+        <div>
+          <h4>Select Packages</h4>
+          <p>Toggle services on/off with live resource estimates</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">6</div>
+        <div>
+          <h4>Network Setup</h4>
+          <p>Local, LAN, or internet-facing with domain + SSL</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">7</div>
+        <div>
+          <h4>Security</h4>
+          <p>Auto-generated credentials. Copy, save, or vault them</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">8</div>
+        <div>
+          <h4>Install</h4>
+          <p>Watch each service deploy with progress and log viewer</p>
+        </div>
+      </div>
+      <div class="wizard-step">
+        <div class="step-num">9</div>
+        <div>
+          <h4>Done 🎉</h4>
+          <p>Service URLs, dashboard access, community links</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section id="download" class="download-section">
+    <div class="section-label">Download</div>
+    <h2 class="section-title">Get OpenTang</h2>
+    <p class="section-desc">Choose your platform. The wizard handles the rest.</p>
+    <div class="download-cards">
+      <a href="https://github.com/Koba42Corp/opentang/releases/latest" class="download-card">
+        <div class="os-icon">🐧</div>
+        <div class="os-name">Linux</div>
+        <div class="os-format">.AppImage</div>
+      </a>
+      <a href="https://github.com/Koba42Corp/opentang/releases/latest" class="download-card">
+        <div class="os-icon">🍎</div>
+        <div class="os-name">macOS</div>
+        <div class="os-format">.dmg</div>
+      </a>
+      <a href="https://github.com/Koba42Corp/opentang/releases/latest" class="download-card">
+        <div class="os-icon">🪟</div>
+        <div class="os-name">Windows</div>
+        <div class="os-format">.msi</div>
+      </a>
+    </div>
+    <p class="prereq-note">
+      Requires Docker. OpenTang checks for it on launch and helps install if missing.<br>
+      <a href="https://docs.docker.com/get-docker/" target="_blank">Get Docker →</a>
+    </p>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to own your stack?</h2>
+    <p>Open source. Community maintained. Built for people who want control.</p>
+    <div class="hero-actions">
+      <a href="https://github.com/Koba42Corp/opentang/releases/latest" class="btn-primary">
+        ⬇ Download Now
+      </a>
+      <a href="https://github.com/Koba42Corp/opentang" target="_blank" class="btn-secondary">
+        ⭐ Star on GitHub
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="https://github.com/Koba42Corp/opentang">GitHub</a>
+        <a href="https://github.com/Koba42Corp/opentang/issues">Issues</a>
+        <a href="https://github.com/Koba42Corp/opentang/discussions">Discussions</a>
+        <a href="https://github.com/Koba42Corp/opentang/blob/main/CONTRIBUTING.md">Contributing</a>
+        <a href="https://github.com/Koba42Corp/opentang/blob/main/PRD.md">PRD</a>
+        <a href="https://clawhub.ai">ClawHub</a>
+        <a href="https://discord.com/invite/clawd">Discord</a>
+      </div>
+      <p class="footer-copy">
+        Apache 2.0 · © 2026 <a href="https://koba42.com">Koba42 Corp</a> · Built with 🔶
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
