@@ -69,9 +69,6 @@ jobs:
       - name: Install frontend deps
         run: npm ci
 
-      - name: Generate icons
-        run: node scripts/generate-icons.js
-
       - name: Build
         uses: tauri-apps/tauri-action@v0
         env:
