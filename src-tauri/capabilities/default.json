@@ -11,6 +11,8 @@
     "core:resources:default",
     "core:menu:default",
     "core:tray:default",
-    "opener:default"
+    "opener:default",
+    "dialog:default",
+    "dialog:allow-open"
   ]
 }

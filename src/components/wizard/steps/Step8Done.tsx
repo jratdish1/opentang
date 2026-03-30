@@ -1,19 +1,33 @@
-import { useEffect } from "react";
+// OpenTang M5 — Done step with post-install health polling
+
+import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { CheckCircle, ExternalLink, RotateCcw, PlusCircle, BookOpen, Package, XCircle, Loader } from "lucide-react";
+import {
+  CheckCircle, ExternalLink, RotateCcw, PlusCircle, BookOpen,
+  Package, XCircle, Loader, AlertTriangle,
+} from "lucide-react";
 import { useWizardStore, ServiceStatus } from "../../../store/useWizardStore";
 import { Button } from "../../shared/Button";
+import { ServiceLink } from "../../../types/install";
 
 // All possible services with their default ports
-const ALL_SERVICE_LINKS = [
-  { id: "coolify",    name: "Coolify Dashboard", port: 8000 },
-  { id: "portainer",  name: "Portainer",          port: 9000 },
-  { id: "gitea",      name: "Gitea",              port: 3000 },
-  { id: "grafana",    name: "Grafana",            port: 3001 },
-  { id: "prometheus", name: "Prometheus",         port: 9090 },
-  { id: "ollama",     name: "Ollama API",         port: 11434 },
+const ALL_SERVICE_LINKS: ServiceLink[] = [
+  { id: "coolify",      name: "Coolify Dashboard",  port: 8000 },
+  { id: "portainer",    name: "Portainer",           port: 9000 },
+  { id: "gitea",        name: "Gitea",               port: 3000 },
+  { id: "grafana",      name: "Grafana",             port: 3001 },
+  { id: "prometheus",   name: "Prometheus",          port: 9090 },
+  { id: "ollama",       name: "Ollama API",          port: 11434 },
+  { id: "n8n",          name: "n8n",                 port: 5678 },
+  { id: "uptime-kuma",  name: "Uptime Kuma",         port: 3003 },
+  { id: "vaultwarden",  name: "Vaultwarden",         port: 8080 },
+  { id: "nextcloud",    name: "Nextcloud",           port: 8081 },
+  { id: "searxng",      name: "SearXNG",             port: 8082 },
 ];
+
+const POLL_INTERVAL_MS = 3000;
+const POLL_MAX = 20; // 20 × 3s = 60s
 
 export default function Step8Done() {
   const {
@@ -28,11 +42,52 @@ export default function Step8Done() {
     setServiceStatuses,
   } = useWizardStore();
 
-  // Fetch real service statuses on mount
+  // Track timed-out services (didn't come up within 60s)
+  const [timedOut, setTimedOut] = useState<Set<string>>(new Set());
+  const pollCountRef = useRef(0);
+  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Fetch service statuses and poll until all running or timeout
+  async function fetchStatuses() {
+    try {
+      const statuses = await invoke<ServiceStatus[]>("get_service_status", { installPath });
+      setServiceStatuses(statuses);
+      return statuses;
+    } catch {
+      return null;
+    }
+  }
+
   useEffect(() => {
-    invoke<ServiceStatus[]>("get_service_status", { installPath })
-      .then((statuses) => setServiceStatuses(statuses))
-      .catch(() => {/* silently ignore — we still show the static list */});
+    fetchStatuses();
+
+    pollTimerRef.current = setInterval(async () => {
+      pollCountRef.current += 1;
+      const statuses = await fetchStatuses();
+
+      // Check if all visible services are running
+      const visibleIds = getVisibleLinks().map((l) => l.id);
+      const allRunning = visibleIds.every((id) =>
+        statuses?.some((s) => (s.name === id || s.name.includes(id)) && s.status === "running")
+      );
+
+      if (allRunning || pollCountRef.current >= POLL_MAX) {
+        if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+        // Mark any non-running services as timed out
+        if (pollCountRef.current >= POLL_MAX && statuses) {
+          const notRunning = visibleIds.filter(
+            (id) => !statuses.some((s) => (s.name === id || s.name.includes(id)) && s.status === "running")
+          );
+          if (notRunning.length > 0) {
+            setTimedOut(new Set(notRunning));
+          }
+        }
+      }
+    }, POLL_INTERVAL_MS);
+
+    return () => {
+      if (pollTimerRef.current) clearInterval(pollTimerRef.current);
+    };
   }, [installPath]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function getBaseUrl(port: number) {
@@ -45,17 +100,25 @@ export default function Step8Done() {
     return `http://localhost:${port}`;
   }
 
-  function getServiceStatus(id: string): ServiceStatus["status"] | null {
-    if (serviceStatuses.length === 0) return null; // not loaded yet
-    return serviceStatuses.find((s) => s.name === id || s.name.includes(id))?.status ?? "stopped";
+  function getLiveStatus(id: string): ServiceStatus["status"] | "starting" | "timeout" | null {
+    if (timedOut.has(id)) return "timeout";
+    if (serviceStatuses.length === 0) return null; // still loading
+    const match = serviceStatuses.find((s) => s.name === id || s.name.includes(id));
+    if (!match) return "starting";
+    if (match.status === "running") return "running";
+    if (match.status === "error") return "error";
+    return "starting";
   }
 
-  // Determine which services are visible (coolify always + selected packages + ollama if local llm)
-  const visibleLinks = ALL_SERVICE_LINKS.filter(({ id }) => {
-    if (id === "coolify") return true;
-    if (id === "ollama") return llmMode === "local";
-    return selectedPackages.includes(id);
-  });
+  function getVisibleLinks(): ServiceLink[] {
+    return ALL_SERVICE_LINKS.filter(({ id }) => {
+      if (id === "coolify") return true;
+      if (id === "ollama") return llmMode === "local";
+      return selectedPackages.includes(id);
+    });
+  }
+
+  const visibleLinks = getVisibleLinks();
 
   const editionName =
     edition === "nanoclaw" ? "NanoClaw" :
@@ -72,6 +135,16 @@ export default function Step8Done() {
     }
   }
 
+  async function viewLogs(id: string) {
+    try {
+      const { openUrl: open } = await import("@tauri-apps/plugin-opener");
+      await open(`http://localhost:9000/#!/2/docker/containers`);
+    } catch {
+      window.open(`http://localhost:9000`, "_blank", "noreferrer");
+    }
+    void id; // logs link goes to Portainer container view
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Hero */}
@@ -86,14 +159,14 @@ export default function Step8Done() {
         </p>
       </div>
 
-      {/* Installed services */}
+      {/* Installed services with live health */}
       <div className="rounded-xl border border-ot-border bg-ot-elevated overflow-hidden mb-4">
         <div className="px-4 py-3 border-b border-ot-border">
           <span className="text-xs font-semibold text-ot-text-secondary uppercase tracking-wider">Installed services</span>
         </div>
         {visibleLinks.map(({ id, name, port }, i) => {
           const url = getBaseUrl(port);
-          const liveStatus = getServiceStatus(id);
+          const liveStatus = getLiveStatus(id);
           return (
             <div
               key={id}
@@ -102,28 +175,51 @@ export default function Step8Done() {
                 i !== visibleLinks.length - 1 ? "border-b border-ot-border" : "",
               ].join(" ")}
             >
-              <div className="flex items-center gap-3">
-                {liveStatus === null && <CheckCircle className="w-4 h-4 text-ot-success flex-shrink-0" />}
+              {/* Status icon + name */}
+              <div className="flex items-center gap-3 min-w-0">
+                {(liveStatus === null || liveStatus === "starting") && (
+                  <Loader className="w-4 h-4 text-ot-text-muted flex-shrink-0 animate-spin" />
+                )}
                 {liveStatus === "running" && <CheckCircle className="w-4 h-4 text-ot-success flex-shrink-0" />}
-                {liveStatus === "stopped" && <Loader className="w-4 h-4 text-ot-text-muted flex-shrink-0" />}
                 {liveStatus === "error" && <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />}
-                <span className="text-sm text-ot-text">{name}</span>
+                {liveStatus === "timeout" && <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0" />}
+                <div className="min-w-0">
+                  <span className="text-sm text-ot-text">{name}</span>
+                  {liveStatus === "starting" && (
+                    <span className="ml-2 text-xs text-ot-text-muted">starting...</span>
+                  )}
+                  {liveStatus === "timeout" && (
+                    <span className="ml-2 text-xs text-yellow-500">timed out</span>
+                  )}
+                </div>
               </div>
-              <a
-                href={url}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-1.5 text-xs text-ot-orange-400 hover:text-ot-orange-300 transition-colors font-mono"
-              >
-                {url}
-                <ExternalLink className="w-3 h-3" />
-              </a>
+
+              {/* URL + view logs */}
+              <div className="flex items-center gap-3 flex-shrink-0">
+                {(liveStatus === "error" || liveStatus === "timeout") && (
+                  <button
+                    onClick={() => viewLogs(id)}
+                    className="text-xs text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    View Logs
+                  </button>
+                )}
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-ot-orange-400 hover:text-ot-orange-300 transition-colors font-mono"
+                >
+                  :{port}
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* Primary CTA — uses tauri-plugin-opener */}
+      {/* Primary CTA */}
       <button
         onClick={openDashboard}
         className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-ot-orange-500 hover:bg-ot-orange-400 text-white font-semibold text-base transition-colors mb-3"

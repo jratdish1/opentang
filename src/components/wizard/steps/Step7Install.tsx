@@ -1,9 +1,13 @@
+// OpenTang M5 — Review & Install step
+// Adds: directory browser, Docker-not-running detection, full error card.
+
 import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import {
   Rocket, ArrowLeft, Edit2, CheckCircle, Clock,
-  Terminal, ChevronDown, ChevronUp, Loader, XCircle, FolderOpen,
+  Terminal, ChevronDown, ChevronUp, Loader, XCircle,
+  FolderOpen, Copy, AlertTriangle,
 } from "lucide-react";
 import { useWizardStore, InstallStep } from "../../../store/useWizardStore";
 import { Button } from "../../shared/Button";
@@ -24,6 +28,11 @@ function buildInstallSteps(
   if (packages.includes("gitea")) steps.push({ id: "gitea", label: "Starting Gitea..." });
   if (packages.includes("grafana")) steps.push({ id: "grafana", label: "Starting Grafana..." });
   if (packages.includes("prometheus")) steps.push({ id: "prometheus", label: "Starting Prometheus..." });
+  if (packages.includes("n8n")) steps.push({ id: "n8n", label: "Starting n8n..." });
+  if (packages.includes("uptime-kuma")) steps.push({ id: "uptime-kuma", label: "Starting Uptime Kuma..." });
+  if (packages.includes("vaultwarden")) steps.push({ id: "vaultwarden", label: "Starting Vaultwarden..." });
+  if (packages.includes("nextcloud")) steps.push({ id: "nextcloud", label: "Starting Nextcloud..." });
+  if (packages.includes("searxng")) steps.push({ id: "searxng", label: "Starting SearXNG..." });
   if (llmMode === "local") steps.push({ id: "ollama", label: "Starting Ollama (LLM)..." });
   if (edition) steps.push({ id: edition, label: `Starting ${editionLabel(edition)}...` });
   steps.push({ id: "finalise", label: "Finalising setup..." });
@@ -76,6 +85,8 @@ export default function Step7Install() {
   const [editingPath, setEditingPath] = useState(false);
   const [pathInput, setPathInput] = useState(installPath);
   const [installError, setInstallError] = useState<string | null>(null);
+  const [fullErrorOutput, setFullErrorOutput] = useState<string | null>(null);
+  const [copiedError, setCopiedError] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll logs
@@ -85,18 +96,43 @@ export default function Step7Install() {
     }
   }, [installLogs]);
 
+  // ── Directory browser ──────────────────────────────────────────────────────
+
+  async function browsePath() {
+    try {
+      const { open } = await import("@tauri-apps/plugin-dialog");
+      const selected = await open({ directory: true, multiple: false, title: "Choose Install Location" });
+      if (selected && typeof selected === "string") {
+        setInstallPath(selected);
+        setPathInput(selected);
+      }
+    } catch {
+      // Dialog plugin not available in dev/web mode — ignore
+    }
+  }
+
+  // ── Copy full error output ─────────────────────────────────────────────────
+
+  async function copyErrorOutput() {
+    if (!fullErrorOutput) return;
+    try {
+      await navigator.clipboard.writeText(fullErrorOutput);
+      setCopiedError(true);
+      setTimeout(() => setCopiedError(false), 2000);
+    } catch {/* ignore */}
+  }
+
   // ── Real install flow ──────────────────────────────────────────────────────
 
   async function beginInstall() {
     setInstallError(null);
+    setFullErrorOutput(null);
 
     const steps = buildInstallSteps(edition, selectedPackages, llmMode);
     const initialProgress: InstallStep[] = steps.map((s) => ({ ...s, status: "pending" }));
     useWizardStore.setState({ installProgress: initialProgress });
 
     startInstall(); // sets isInstalling: true, clears logs
-
-    // Mark config step active immediately
     updateInstallStep("config", "active", "Writing docker-compose.yml...");
 
     try {
@@ -127,32 +163,54 @@ export default function Step7Install() {
         const { step_id, status, message } = event.payload;
 
         if (step_id === "log") {
-          // Raw log line — append to log panel only
           appendInstallLog(message);
           return;
         }
 
-        // Redact potential credential values from displayed messages
         const safeLine = message.replace(/password=\S+/gi, "password=***");
-
         appendInstallLog(`[${status.toUpperCase()}] ${safeLine}`);
         updateInstallStep(step_id, status as InstallStep["status"], safeLine);
+      });
+
+      // 3. Listen for full error output
+      const unlistenError = await listen<string>("install-error", (event) => {
+        const raw = event.payload;
+        setFullErrorOutput(raw);
+        // Check for Docker-not-running specifically
+        const lower = raw.toLowerCase();
+        if (
+          lower.includes("docker is not running") ||
+          lower.includes("is the docker daemon running") ||
+          lower.includes("cannot connect to the docker daemon")
+        ) {
+          setInstallError("Docker is not running. Please start Docker Desktop (or the Docker daemon) and try again.");
+        } else {
+          setInstallError("Installation failed. See the error output below.");
+        }
       });
 
       const unlistenComplete = await listen("install-complete", () => {
         unlistenProgress();
         unlistenComplete();
+        unlistenError();
         appendInstallLog("[INFO] Install complete — all services running.");
         completeStep(currentStep);
         setTimeout(() => nextStep(), 800);
       });
 
-      // 3. Kick off docker compose up -d (streams events in background)
+      // 4. Kick off docker compose up -d (streams events in background)
       await invoke("start_install", { installPath });
 
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      setInstallError(msg);
+      // Friendly message for Docker not running
+      const lower = msg.toLowerCase();
+      if (lower.includes("docker") && (lower.includes("not running") || lower.includes("cannot connect"))) {
+        setInstallError("Docker is not running. Please start Docker Desktop (or the Docker daemon) and try again.");
+      } else {
+        setInstallError(msg);
+      }
+      setFullErrorOutput(msg);
       appendInstallLog(`[ERROR] ${msg}`);
     }
   }
@@ -167,7 +225,7 @@ export default function Step7Install() {
         : steps.map((s) => ({ ...s, status: "pending" as const }));
 
     const doneCount = progress.filter((s) => s.status === "done").length;
-    const hasError = progress.some((s) => s.status === "error");
+    const hasError = progress.some((s) => s.status === "error") || !!installError;
     const pct = Math.round((doneCount / steps.length) * 100);
 
     return (
@@ -230,10 +288,30 @@ export default function Step7Install() {
           ))}
         </div>
 
-        {/* Top-level error */}
+        {/* Full error card */}
         {installError && (
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 mb-4 text-sm text-red-400">
-            {installError}
+          <div className="rounded-xl border border-red-500/40 bg-red-500/10 p-4 mb-4">
+            <div className="flex items-start gap-3 mb-3">
+              <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-red-300 mb-1">Installation failed</p>
+                <p className="text-sm text-red-400">{installError}</p>
+              </div>
+            </div>
+            {fullErrorOutput && (
+              <>
+                <div className="rounded-lg bg-black/40 p-3 max-h-32 overflow-y-auto font-mono text-xs text-red-300 mb-3">
+                  {fullErrorOutput}
+                </div>
+                <button
+                  onClick={copyErrorOutput}
+                  className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 transition-colors"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  {copiedError ? "Copied!" : "Copy error output"}
+                </button>
+              </>
+            )}
           </div>
         )}
 
@@ -312,52 +390,48 @@ export default function Step7Install() {
         ))}
       </div>
 
-      {/* Install path */}
-      <div className="rounded-xl border border-ot-border bg-ot-elevated px-5 py-3.5 mb-6">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <FolderOpen className="w-4 h-4 text-ot-text-muted flex-shrink-0" />
-            <div className="min-w-0">
-              <p className="text-xs text-ot-text-muted">Install path</p>
+      {/* Install path picker */}
+      <div className="rounded-xl border border-ot-border bg-ot-elevated px-5 py-4 mb-2">
+        <div className="flex items-start gap-3">
+          <FolderOpen className="w-4 h-4 text-ot-text-muted flex-shrink-0 mt-1" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-ot-text-muted mb-1">Install Location</p>
+            <div className="flex items-center gap-2">
               {editingPath ? (
                 <input
                   autoFocus
                   value={pathInput}
                   onChange={(e) => setPathInput(e.target.value)}
-                  onBlur={() => {
-                    setInstallPath(pathInput || "~/.opentang");
-                    setEditingPath(false);
-                  }}
+                  onBlur={() => { setInstallPath(pathInput || "~/.opentang"); setEditingPath(false); }}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setInstallPath(pathInput || "~/.opentang");
-                      setEditingPath(false);
-                    }
-                    if (e.key === "Escape") {
-                      setPathInput(installPath);
-                      setEditingPath(false);
-                    }
+                    if (e.key === "Enter") { setInstallPath(pathInput || "~/.opentang"); setEditingPath(false); }
+                    if (e.key === "Escape") { setPathInput(installPath); setEditingPath(false); }
                   }}
-                  className="text-sm font-mono text-ot-text bg-transparent border-b border-ot-orange-500 outline-none w-full"
+                  className="flex-1 text-sm font-mono text-ot-text bg-transparent border-b border-ot-orange-500 outline-none"
                 />
               ) : (
-                <p className="text-sm text-ot-text font-mono truncate">{installPath}</p>
+                <span
+                  onClick={() => { setPathInput(installPath); setEditingPath(true); }}
+                  className="flex-1 text-sm text-ot-text font-mono truncate cursor-text"
+                >
+                  {installPath}
+                </span>
               )}
+              <button
+                onClick={browsePath}
+                className="flex items-center gap-1 text-xs text-ot-orange-400 hover:text-ot-orange-300 transition-colors flex-shrink-0 border border-ot-border rounded-md px-2 py-1"
+              >
+                Browse
+              </button>
             </div>
           </div>
-          {!editingPath && (
-            <button
-              onClick={() => { setPathInput(installPath); setEditingPath(true); }}
-              className="flex items-center gap-1 text-xs text-ot-orange-400 hover:text-ot-orange-300 transition-colors flex-shrink-0"
-            >
-              <Edit2 className="w-3 h-3" />
-              Edit
-            </button>
-          )}
         </div>
+        <p className="text-xs text-ot-text-muted mt-2 ml-7">
+          Files written here: <code className="text-ot-text-secondary">docker-compose.yml</code> &amp; <code className="text-ot-text-secondary">.env</code> (keep secure)
+        </p>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 mt-6">
         <Button variant="ghost" onClick={prevStep}>
           <ArrowLeft className="w-4 h-4" />
           Back
