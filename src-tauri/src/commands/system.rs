@@ -320,18 +320,18 @@ pub async fn system_check() -> SystemCheckResult {
         },
     });
 
-    // ram
+    // ram — judge on TOTAL, not available (macOS aggressively caches in RAM)
     checks.push(CheckItem {
         id: "ram".to_string(),
-        label: "Available RAM".to_string(),
-        status: if ram_available_gb >= 8.0 {
+        label: "System RAM".to_string(),
+        status: if ram_gb >= 8.0 {
             CheckStatus::Pass
-        } else if ram_available_gb >= 4.0 {
+        } else if ram_gb >= 4.0 {
             CheckStatus::Warn
         } else {
             CheckStatus::Fail
         },
-        message: format!("{:.1} GB available (8 GB recommended)", ram_available_gb),
+        message: format!("{:.0} GB total ({:.1} GB available)", ram_gb, ram_available_gb),
     });
 
     // disk
