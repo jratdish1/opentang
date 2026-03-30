@@ -21,6 +21,7 @@ export default function ManagementShell() {
       <header className="flex items-center justify-between px-6 border-b border-ot-border bg-ot-surface h-14 flex-shrink-0">
         {/* Logo */}
         <div className="flex items-center gap-2">
+          <img src="/src/assets/logo-mark.png" alt="OpenTang" style={{ height: "28px" }} />
           <span className="text-ot-orange-500 font-bold text-lg tracking-tight">OpenTang</span>
           <span className="text-ot-text-muted text-xs font-mono">v0.1.0</span>
         </div>

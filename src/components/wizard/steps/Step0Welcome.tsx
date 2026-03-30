@@ -30,9 +30,12 @@ export default function Step0Welcome() {
         </span>
 
         {/* Logo / Title */}
-        <h1 className="text-7xl font-extrabold text-ot-text tracking-tight mb-4 leading-none">
-          OpenTang
-        </h1>
+        <img
+          src="/src/assets/logo-wordmark.png"
+          alt="OpenTang"
+          style={{ maxWidth: "320px" }}
+          className="mx-auto mb-6"
+        />
 
         {/* Tagline */}
         <p className="text-2xl font-semibold text-ot-orange-500 mb-5">

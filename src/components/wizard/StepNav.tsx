@@ -36,15 +36,18 @@ export default function StepNav() {
   return (
     <nav className="w-60 min-h-screen flex-shrink-0 bg-ot-surface border-r border-ot-border flex flex-col">
       {/* Brand header */}
-      <div className="px-5 py-5 border-b border-ot-border-subtle">
+      <div className="px-5 py-5 border-b border-ot-border-subtle flex flex-col items-center">
         <button
           onClick={() => goToStep(0)}
-          className="text-left hover:opacity-80 transition-opacity"
+          className="flex flex-col items-center hover:opacity-80 transition-opacity"
         >
-          <p className="text-ot-orange-500 font-bold text-base tracking-wide">
-            OpenTang
-          </p>
-          <p className="text-ot-text-muted text-xs font-mono mt-0.5">v0.1.0</p>
+          <img
+            src="/src/assets/logo-mark.png"
+            alt="OpenTang"
+            style={{ width: "40px" }}
+            className="mb-4"
+          />
+          <p className="text-ot-text-muted text-xs font-mono">v0.1.0</p>
         </button>
       </div>
 
