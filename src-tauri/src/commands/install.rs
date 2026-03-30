@@ -2,6 +2,7 @@
 // Tier 1 + Tier 2 services, SSL/Traefik, complete .env, error handling.
 
 use std::collections::HashMap;
+use tauri::Emitter;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 use std::process::Stdio;

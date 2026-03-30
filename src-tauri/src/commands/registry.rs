@@ -1,5 +1,6 @@
 // OpenTang M6 — Package Registry commands
 
+use tauri::Emitter;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 use std::process::Stdio;
