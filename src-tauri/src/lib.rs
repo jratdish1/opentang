@@ -3,7 +3,7 @@
 // M6: Package Registry — App Store, Dashboard, install state persistence.
 
 mod commands;
-use commands::system::system_check;
+use commands::system::{system_check, install_docker};
 use commands::install::{generate_compose, start_install, get_service_status};
 use commands::registry::{
     get_registry, install_package, remove_package, update_package,
@@ -17,6 +17,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             system_check,
+            install_docker,
             generate_compose,
             start_install,
             get_service_status,

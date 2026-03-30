@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Monitor, ArrowRight, ArrowLeft, RefreshCw, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Monitor, ArrowRight, ArrowLeft, RefreshCw, CheckCircle2, AlertTriangle, XCircle, Loader2, Package } from "lucide-react";
 import { useWizardStore, SystemCheckResult, CheckItem } from "../../../store/useWizardStore";
 import { Button } from "../../shared/Button";
 import { Card } from "../../shared/Card";
@@ -42,6 +42,11 @@ export default function Step1SystemCheck() {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [dockerInstalling, setDockerInstalling] = useState(false);
+  const [dockerProgress, setDockerProgress] = useState<string[]>([]);
+  const [showManualInfo, setShowManualInfo] = useState(false);
+  const unlistenRef = useRef<(() => void) | null>(null);
+
   async function runCheck() {
     setScanning(true);
     setError(null);
@@ -66,8 +71,50 @@ export default function Step1SystemCheck() {
     }
   }
 
+  async function installDocker() {
+    setDockerInstalling(true);
+    setDockerProgress([]);
+    setShowManualInfo(false);
+
+    if (!isTauri()) {
+      setDockerProgress(["Simulating Docker install (dev mode)…"]);
+      await new Promise((r) => setTimeout(r, 1500));
+      setDockerProgress((prev) => [...prev, "Done (simulated). Re-running system check…"]);
+      setDockerInstalling(false);
+      runCheck();
+      return;
+    }
+
+    const { invoke } = await import("@tauri-apps/api/core");
+    const { listen } = await import("@tauri-apps/api/event");
+
+    unlistenRef.current = await listen<string>("docker-install-progress", (event) => {
+      setDockerProgress((prev) => [...prev, event.payload]);
+    });
+
+    try {
+      await invoke("install_docker");
+      const os = result?.os;
+      if (os === "macos" || os === "windows") {
+        setShowManualInfo(true);
+      } else {
+        // Linux: re-run check automatically after successful install
+        await runCheck();
+      }
+    } catch (e) {
+      setDockerProgress((prev) => [...prev, `Error: ${String(e)}`]);
+    } finally {
+      unlistenRef.current?.();
+      unlistenRef.current = null;
+      setDockerInstalling(false);
+    }
+  }
+
   useEffect(() => {
     runCheck();
+    return () => {
+      unlistenRef.current?.();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -121,12 +168,57 @@ export default function Step1SystemCheck() {
               {/* Checklist */}
               <ul className="space-y-2">
                 {result.checks.map((check) => (
-                  <li key={check.id} className="flex items-start gap-3 py-2 border-b border-ot-border-subtle last:border-0">
-                    <CheckIcon status={check.status} />
-                    <div className="flex-1 min-w-0">
-                      <span className="text-ot-text text-sm font-medium">{check.label}</span>
-                      <p className="text-ot-text-secondary text-xs mt-0.5">{check.message}</p>
+                  <li key={check.id} className="py-2 border-b border-ot-border-subtle last:border-0">
+                    <div className="flex items-start gap-3">
+                      <CheckIcon status={check.status} />
+                      <div className="flex-1 min-w-0">
+                        <span className="text-ot-text text-sm font-medium">{check.label}</span>
+                        <p className="text-ot-text-secondary text-xs mt-0.5">{check.message}</p>
+                      </div>
+                      {check.id === "docker-installed" && check.status === "Fail" && !dockerInstalling && !showManualInfo && (
+                        <button
+                          onClick={installDocker}
+                          className="flex items-center gap-1.5 px-3 py-1 rounded text-xs font-semibold bg-ot-orange-500 hover:bg-ot-orange-600 text-white transition-colors flex-shrink-0"
+                        >
+                          <Package className="w-3 h-3" />
+                          Install Docker
+                        </button>
+                      )}
+                      {check.id === "docker-installed" && check.status === "Fail" && dockerInstalling && (
+                        <div className="flex items-center gap-1.5 text-ot-text-secondary text-xs flex-shrink-0">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Installing…
+                        </div>
+                      )}
                     </div>
+
+                    {/* Docker install progress — shown under the docker-installed row */}
+                    {check.id === "docker-installed" && (dockerInstalling || dockerProgress.length > 0) && !showManualInfo && (
+                      <div className="mt-2 ml-7 rounded bg-ot-overlay border border-ot-border p-3 space-y-1 max-h-36 overflow-y-auto">
+                        {dockerProgress.map((msg, i) => (
+                          <p key={i} className="text-xs text-ot-text-secondary font-mono leading-relaxed">{msg}</p>
+                        ))}
+                        {dockerInstalling && (
+                          <p className="text-xs text-ot-orange-500 font-mono animate-pulse">…</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Manual install info panel (macOS / Windows) */}
+                    {check.id === "docker-installed" && showManualInfo && (
+                      <div className="mt-2 ml-7 rounded bg-ot-overlay border border-ot-orange-500/40 p-3 space-y-2">
+                        <p className="text-xs text-ot-text">
+                          Your browser has been opened with installation instructions.
+                          Complete the install, then click <strong>Retry</strong> below to re-run the system check.
+                        </p>
+                        <button
+                          onClick={() => setShowManualInfo(false)}
+                          className="text-xs text-ot-text-muted hover:text-ot-text underline"
+                        >
+                          Dismiss
+                        </button>
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -154,7 +246,7 @@ export default function Step1SystemCheck() {
               {/* Retry button if any failures */}
               {hasFail && (
                 <div className="pt-2">
-                  <Button variant="ghost" onClick={runCheck}>
+                  <Button variant="ghost" onClick={runCheck} disabled={dockerInstalling}>
                     <RefreshCw className="w-4 h-4" />
                     Retry
                   </Button>
@@ -171,7 +263,7 @@ export default function Step1SystemCheck() {
           <ArrowLeft className="w-4 h-4" />
           Back
         </Button>
-        <Button onClick={handleContinue} disabled={scanning || hasFail}>
+        <Button onClick={handleContinue} disabled={scanning || hasFail || dockerInstalling}>
           Continue
           <ArrowRight className="w-4 h-4" />
         </Button>

@@ -1,4 +1,6 @@
 use sysinfo::{Disks, System};
+use tauri::Emitter;
+use tauri_plugin_opener::OpenerExt;
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct SystemCheckResult {
@@ -114,6 +116,92 @@ fn os_version_string() -> String {
     #[cfg(not(any(target_os = "linux", target_os = "macos", target_os = "windows")))]
     {
         std::env::consts::OS.to_string()
+    }
+}
+
+#[tauri::command]
+pub async fn install_docker(app: tauri::AppHandle) -> Result<(), String> {
+    match std::env::consts::OS {
+        "linux" => {
+            let _ = app.emit("docker-install-progress", "Downloading Docker install script…");
+            let app2 = app.clone();
+            tokio::task::spawn_blocking(move || {
+                let _ = app2.emit("docker-install-progress", "Running: curl -fsSL https://get.docker.com | sh");
+                let output = std::process::Command::new("sh")
+                    .arg("-c")
+                    .arg("curl -fsSL https://get.docker.com | sh")
+                    .output();
+
+                match output {
+                    Ok(out) if out.status.success() => {
+                        let _ = app2.emit("docker-install-progress", "Docker installed successfully.");
+                        let user = std::env::var("USER").unwrap_or_default();
+                        if !user.is_empty() {
+                            let _ = app2.emit(
+                                "docker-install-progress",
+                                format!("Adding {} to docker group…", user),
+                            );
+                            let result = std::process::Command::new("sudo")
+                                .args(["usermod", "-aG", "docker", &user])
+                                .output();
+                            match result {
+                                Ok(u) if u.status.success() => {
+                                    let _ = app2.emit(
+                                        "docker-install-progress",
+                                        "Done. Log out and back in for group changes to take effect.",
+                                    );
+                                }
+                                Ok(u) => {
+                                    let stderr = String::from_utf8_lossy(&u.stderr).to_string();
+                                    let _ = app2.emit(
+                                        "docker-install-progress",
+                                        format!("Warning: could not add to docker group: {}", stderr),
+                                    );
+                                }
+                                Err(e) => {
+                                    let _ = app2.emit(
+                                        "docker-install-progress",
+                                        format!("Warning: usermod failed: {}", e),
+                                    );
+                                }
+                            }
+                        }
+                        Ok(())
+                    }
+                    Ok(out) => {
+                        let stderr = String::from_utf8_lossy(&out.stderr).to_string();
+                        Err(format!("Install script failed: {}", stderr))
+                    }
+                    Err(e) => Err(format!("Failed to run install script: {}", e)),
+                }
+            })
+            .await
+            .map_err(|e| format!("Task error: {}", e))?
+        }
+        "macos" => {
+            let _ = app.emit(
+                "docker-install-progress",
+                "Opening orbstack.dev — install OrbStack or Docker Desktop, then click Retry.",
+            );
+            app.opener()
+                .open_url("https://orbstack.dev", None::<String>)
+                .map_err(|e| format!("Could not open browser: {}", e))?;
+            Ok(())
+        }
+        "windows" => {
+            let _ = app.emit(
+                "docker-install-progress",
+                "Opening Docker Desktop docs — enable WSL2, install Docker Desktop, then click Retry.",
+            );
+            app.opener()
+                .open_url(
+                    "https://docs.docker.com/desktop/install/windows-install/",
+                    None::<String>,
+                )
+                .map_err(|e| format!("Could not open browser: {}", e))?;
+            Ok(())
+        }
+        other => Err(format!("Unsupported OS: {}", other)),
     }
 }
 
