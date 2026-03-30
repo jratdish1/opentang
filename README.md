@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🔶 OpenTang
+<img src="https://api.dracattus.com/v1/files/koba42/5b08ccf263df2102b7f6b0c9fe19cb5e_opentang-logo-w-text.png" alt="OpenTang" width="320" />
+
+<br /><br />
 
 **Your stack. Your rules.**
 
