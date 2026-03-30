@@ -1,11 +1,14 @@
 // OpenTang — Tauri backend
-// M1: Bones — minimal shell, no commands wired yet.
-// System detection, compose generation, and IPC commands come in M2/M3.
+// M2: Heartbeat — System detection wired.
+
+mod commands;
+use commands::system::system_check;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![system_check])
         .run(tauri::generate_context!())
         .expect("error while running OpenTang")
 }

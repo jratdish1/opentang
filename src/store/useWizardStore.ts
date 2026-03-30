@@ -1,8 +1,33 @@
 import { create } from "zustand";
 
+export interface CheckItem {
+  id: string;
+  label: string;
+  status: "Pass" | "Warn" | "Fail";
+  message: string;
+}
+
+export interface SystemCheckResult {
+  os: string;
+  os_version: string;
+  arch: string;
+  ram_gb: number;
+  ram_available_gb: number;
+  disk_gb: number;
+  disk_available_gb: number;
+  docker_installed: boolean;
+  docker_version: string | null;
+  docker_running: boolean;
+  wsl2_available: boolean;
+  checks: CheckItem[];
+}
+
 interface WizardState {
   currentStep: number;
   completedSteps: number[];
+
+  // System check result from M2
+  systemCheck: SystemCheckResult | null;
 
   // User selections (populated across wizard steps)
   edition: "nanoclaw" | "hermes" | "openclaw" | null;
@@ -17,6 +42,7 @@ interface WizardState {
   completeStep: (step: number) => void;
 
   // Selection setters
+  setSystemCheck: (result: SystemCheckResult) => void;
   setEdition: (edition: WizardState["edition"]) => void;
   setLlmMode: (mode: WizardState["llmMode"]) => void;
   togglePackage: (pkg: string) => void;
@@ -28,6 +54,8 @@ export const TOTAL_STEPS = 9; // Steps 0–8
 export const useWizardStore = create<WizardState>()((set) => ({
   currentStep: 0,
   completedSteps: [],
+
+  systemCheck: null,
 
   edition: null,
   llmMode: null,
@@ -54,6 +82,7 @@ export const useWizardStore = create<WizardState>()((set) => ({
         : [...state.completedSteps, step],
     })),
 
+  setSystemCheck: (result) => set({ systemCheck: result }),
   setEdition: (edition) => set({ edition }),
   setLlmMode: (llmMode) => set({ llmMode }),
   setNetworkMode: (networkMode) => set({ networkMode }),
