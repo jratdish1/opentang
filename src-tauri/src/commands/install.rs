@@ -522,6 +522,30 @@ fn extract_service_name(line: &str) -> Option<&'static str> {
     KNOWN.iter().find(|&&svc| lower.contains(svc)).copied()
 }
 
+/// Locate the docker binary, searching common install paths that may not be
+/// in a GUI app's default PATH on macOS.
+fn find_docker() -> Option<String> {
+    // First try the normal PATH
+    if let Ok(out) = std::process::Command::new("docker").arg("--version").output() {
+        if out.status.success() {
+            return Some("docker".to_string());
+        }
+    }
+    // Common locations on macOS / Linux where Docker may live
+    for candidate in &[
+        "/usr/local/bin/docker",
+        "/opt/homebrew/bin/docker",
+        "/usr/bin/docker",
+        "/Applications/Docker.app/Contents/Resources/bin/docker",
+        "/Applications/OrbStack.app/Contents/MacOS/xbin/docker",
+    ] {
+        if std::path::Path::new(candidate).exists() {
+            return Some(candidate.to_string());
+        }
+    }
+    None
+}
+
 /// Background worker: run `docker compose up -d` and stream progress events.
 fn run_docker_compose_streaming(path: PathBuf, app: tauri::AppHandle) {
     let emit = |step_id: &str, status: &str, message: &str| {
@@ -535,8 +559,18 @@ fn run_docker_compose_streaming(path: PathBuf, app: tauri::AppHandle) {
         );
     };
 
+    // Resolve Docker binary path (macOS GUI apps have minimal PATH)
+    let docker_bin = match find_docker() {
+        Some(bin) => bin,
+        None => {
+            emit("pull", "error", "Docker is not installed or not in PATH. Please install Docker and try again.");
+            let _ = app.emit("install-error", "Docker is not installed or not in PATH.".to_string());
+            return;
+        }
+    };
+
     // Check Docker is reachable before we try
-    let docker_check = std::process::Command::new("docker")
+    let docker_check = std::process::Command::new(&docker_bin)
         .args(["info"])
         .output();
 
@@ -565,7 +599,7 @@ fn run_docker_compose_streaming(path: PathBuf, app: tauri::AppHandle) {
 
     emit("pull", "active", "Starting docker compose up -d ...");
 
-    let mut child = match std::process::Command::new("docker")
+    let mut child = match std::process::Command::new(&docker_bin)
         .args(["compose", "up", "-d"])
         .current_dir(&path)
         .stdout(Stdio::piped())
@@ -720,7 +754,8 @@ pub async fn start_install(install_path: String, app: tauri::AppHandle) -> Resul
 pub async fn get_service_status(install_path: String) -> Result<Vec<ServiceStatus>, String> {
     let path = resolve_path(&install_path)?;
 
-    let output = std::process::Command::new("docker")
+    let docker_bin = find_docker().unwrap_or_else(|| "docker".to_string());
+    let output = std::process::Command::new(&docker_bin)
         .args(["compose", "ps", "--format", "json"])
         .current_dir(&path)
         .output()
