@@ -194,18 +194,29 @@ phase_workspace() {
     # --- Claude Code / GLM Coding Plan Setup ---
     log "Configuring Claude Code for Z.AI GLM Coding Plan..."
     su - ${DEPLOY_USER} -c "mkdir -p /home/${DEPLOY_USER}/.claude"
-    cat << 'CLAUDEEOF' > /home/${DEPLOY_USER}/.claude/settings.json
+    # Create a template file for both Anthropic and Z.AI keys
+    cat << 'CLAUDEEOF' > /home/${DEPLOY_USER}/.claude/settings.json.template
 {
   "env": {
+    "// NOTE": "To use Z.AI GLM models (Cost effective), uncomment the Z.AI section and comment the Anthropic section.",
+    "// NOTE 2": "To use official Claude models, uncomment the Anthropic section and comment the Z.AI section.",
+    
+    "// --- Z.AI CONFIGURATION (Default) ---": "",
     "ANTHROPIC_AUTH_TOKEN": "YOUR_ZAI_API_KEY_HERE",
     "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
     "API_TIMEOUT_MS": "3000000",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.5-air",
     "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-4.7",
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-4.7"
+    
+    "// --- ANTHROPIC CONFIGURATION ---": "",
+    "// ANTHROPIC_AUTH_TOKEN": "YOUR_ANTHROPIC_API_KEY_HERE",
+    "// ANTHROPIC_BASE_URL": "https://api.anthropic.com"
   }
 }
 CLAUDEEOF
+    # Copy template to actual settings file
+    cp /home/${DEPLOY_USER}/.claude/settings.json.template /home/${DEPLOY_USER}/.claude/settings.json
     chown ${DEPLOY_USER}:${DEPLOY_USER} /home/${DEPLOY_USER}/.claude/settings.json
     
     # --- Install AI Skills (Personality + UI/UX Layers) ---
@@ -445,8 +456,8 @@ phase_summary() {
     log "2. cd ${WORKSPACE_DIR}"
     log "3. cp .env.example .env && nano .env  (add your private key)"
     log "4. npm install"
-    log "5. Configure Z.AI GLM Coding Plan:"
-    log "   nano ~/.claude/settings.json  (replace YOUR_ZAI_API_KEY_HERE with your key)"
+    log "5. Configure API Keys (Z.AI or Anthropic):"
+    log "   nano ~/.claude/settings.json  (add your Z.AI or Anthropic API key)"
     log "6. gh auth login  (authenticate GitHub CLI)"
     log "7. git remote add origin <your-repo-url>"
     log "8. git push -u origin main"

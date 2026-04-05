@@ -42,9 +42,9 @@ cp .env.example .env
 nano .env  # Add your deployer private key
 npm install
 
-# Configure Z.AI GLM Coding Plan API Key
+# Configure API Keys (Z.AI or Anthropic)
 nano ~/.claude/settings.json
-# Replace "YOUR_ZAI_API_KEY_HERE" with your actual key from z.ai
+# Follow the template instructions to add your Z.AI or Anthropic key
 
 # Verify AI Personality & UI/UX Skills are installed
 uipro init --ai claude --global
