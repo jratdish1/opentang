@@ -149,7 +149,10 @@ phase_nodejs() {
     fi
     npm install -g npm@latest
     npm install -g hardhat yarn pnpm
-    log "PHASE 5: Node.js and global packages installed."
+    
+    log "PHASE 5.1: Installing Claude Code (for GLM Coding Plan)..."
+    npm install -g @anthropic-ai/claude-code
+    log "PHASE 5: Node.js, global packages, and Claude Code installed."
 }
 
 # ============================================================================
@@ -184,6 +187,23 @@ phase_github_cli() {
 # ============================================================================
 phase_workspace() {
     log "PHASE 8: Setting up crypto deployment workspace..."
+    
+    # --- Claude Code / GLM Coding Plan Setup ---
+    log "Configuring Claude Code for Z.AI GLM Coding Plan..."
+    su - ${DEPLOY_USER} -c "mkdir -p /home/${DEPLOY_USER}/.claude"
+    cat << 'CLAUDEEOF' > /home/${DEPLOY_USER}/.claude/settings.json
+{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "YOUR_ZAI_API_KEY_HERE",
+    "ANTHROPIC_BASE_URL": "https://api.z.ai/api/anthropic",
+    "API_TIMEOUT_MS": "3000000",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "glm-4.5-air",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "glm-4.7",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "glm-4.7"
+  }
+}
+CLAUDEEOF
+    chown ${DEPLOY_USER}:${DEPLOY_USER} /home/${DEPLOY_USER}/.claude/settings.json
     su - ${DEPLOY_USER} -c "mkdir -p ${WORKSPACE_DIR}"
 
     # --- .env.example ---
@@ -414,9 +434,11 @@ phase_summary() {
     log "2. cd ${WORKSPACE_DIR}"
     log "3. cp .env.example .env && nano .env  (add your private key)"
     log "4. npm install"
-    log "5. gh auth login  (authenticate GitHub CLI)"
-    log "6. git remote add origin <your-repo-url>"
-    log "7. git push -u origin main"
+    log "5. Configure Z.AI GLM Coding Plan:"
+    log "   nano ~/.claude/settings.json  (replace YOUR_ZAI_API_KEY_HERE with your key)"
+    log "6. gh auth login  (authenticate GitHub CLI)"
+    log "7. git remote add origin <your-repo-url>"
+    log "8. git push -u origin main"
     log ""
     log "SECURITY NOTES:"
     log "- Root login DISABLED. Use '${DEPLOY_USER}' with SSH key."

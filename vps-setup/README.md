@@ -12,7 +12,7 @@ The `contabo_vps_setup.sh` script automates the entire VPS configuration process
 | 2 | Create a dedicated `deployer` user with SSH key access |
 | 3 | Security hardening: SSH lockdown, UFW firewall, Fail2Ban, auto-updates |
 | 4 | Docker installation for containerized workflows |
-| 5 | Node.js LTS with Hardhat, Yarn, and pnpm |
+| 5 | Node.js LTS with Hardhat, Yarn, pnpm, and **Claude Code** (for GLM Coding Plan) |
 | 6 | Foundry (Forge, Cast, Anvil, Chisel) for Solidity development |
 | 7 | GitHub CLI for repository management |
 | 8 | Workspace creation with Hardhat and Foundry configs for PulseChain and BASE |
@@ -41,6 +41,10 @@ cd ~/crypto_deployment
 cp .env.example .env
 nano .env  # Add your deployer private key
 npm install
+
+# Configure Z.AI GLM Coding Plan API Key
+nano ~/.claude/settings.json
+# Replace "YOUR_ZAI_API_KEY_HERE" with your actual key from z.ai
 ```
 
 ## File Structure
