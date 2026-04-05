@@ -46,6 +46,10 @@ npm install
 nano ~/.claude/settings.json
 # Follow the template instructions to add your Z.AI or Anthropic key
 
+# Configure OpenClaw (Autonomous Trading Agent Framework)
+nano ~/.openclaw/config.json
+# Add your Z.AI API key to enable 24/7 agents
+
 # Verify AI Personality & UI/UX Skills are installed
 uipro init --ai claude --global
 npx skills add vercel-labs/agent-skills

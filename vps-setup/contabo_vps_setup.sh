@@ -219,6 +219,26 @@ CLAUDEEOF
     cp /home/${DEPLOY_USER}/.claude/settings.json.template /home/${DEPLOY_USER}/.claude/settings.json
     chown ${DEPLOY_USER}:${DEPLOY_USER} /home/${DEPLOY_USER}/.claude/settings.json
     
+    # --- Install OpenClaw (Autonomous Agent Framework) ---
+    log "Installing OpenClaw for 24/7 Autonomous Agents..."
+    # Install headless (no onboarding) since this is a VPS/VDS
+    su - ${DEPLOY_USER} -c "curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard"
+    
+    # Configure OpenClaw with Z.AI API Key
+    su - ${DEPLOY_USER} -c "mkdir -p /home/${DEPLOY_USER}/.openclaw"
+    cat << 'OCEOF' > /home/${DEPLOY_USER}/.openclaw/config.json
+{
+  "defaultModel": "glm-5.1",
+  "providers": {
+    "zai": {
+      "apiKey": "YOUR_ZAI_API_KEY_HERE",
+      "baseUrl": "https://api.z.ai/api/anthropic"
+    }
+  }
+}
+OCEOF
+    chown ${DEPLOY_USER}:${DEPLOY_USER} /home/${DEPLOY_USER}/.openclaw/config.json
+
     # --- Install AI Skills (Personality + UI/UX Layers) ---
     log "Installing AI Personality & UI/UX Skills..."
     su - ${DEPLOY_USER} -c "mkdir -p /home/${DEPLOY_USER}/.claude/skills"
@@ -458,6 +478,7 @@ phase_summary() {
     log "4. npm install"
     log "5. Configure API Keys (Z.AI or Anthropic):"
     log "   nano ~/.claude/settings.json  (add your Z.AI or Anthropic API key)"
+    log "   nano ~/.openclaw/config.json  (add your Z.AI API key for trading agents)"
     log "6. gh auth login  (authenticate GitHub CLI)"
     log "7. git remote add origin <your-repo-url>"
     log "8. git push -u origin main"
