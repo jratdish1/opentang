@@ -152,7 +152,10 @@ phase_nodejs() {
     
     log "PHASE 5.1: Installing Claude Code (for GLM Coding Plan)..."
     npm install -g @anthropic-ai/claude-code
-    log "PHASE 5: Node.js, global packages, and Claude Code installed."
+    
+    log "PHASE 5.2: Installing UI/UX Pro Max Skill CLI..."
+    npm install -g uipro-cli
+    log "PHASE 5: Node.js, global packages, Claude Code, and UI skills installed."
 }
 
 # ============================================================================
@@ -204,6 +207,14 @@ phase_workspace() {
 }
 CLAUDEEOF
     chown ${DEPLOY_USER}:${DEPLOY_USER} /home/${DEPLOY_USER}/.claude/settings.json
+    
+    # --- Install AI Skills (Personality + UI/UX Layers) ---
+    log "Installing AI Personality & UI/UX Skills..."
+    su - ${DEPLOY_USER} -c "mkdir -p /home/${DEPLOY_USER}/.claude/skills"
+    su - ${DEPLOY_USER} -c "cd /home/${DEPLOY_USER} && uipro init --ai claude --global 2>/dev/null || log 'uipro init deferred - run manually after first login'"
+    su - ${DEPLOY_USER} -c "cd /home/${DEPLOY_USER} && npx skills add vercel-labs/agent-skills 2>/dev/null || log 'Vercel skills deferred - run manually after first login'"
+    log "AI Skills installation attempted. Verify after first SSH login."
+    
     su - ${DEPLOY_USER} -c "mkdir -p ${WORKSPACE_DIR}"
 
     # --- .env.example ---
