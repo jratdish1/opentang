@@ -1,4 +1,4 @@
-# Active Todo List — Updated 2026-04-09 1720 PT
+# Active Todo List — Updated 2026-04-09 1800 PT
 
 ---
 
@@ -63,6 +63,20 @@
 - [ ] Regain SSH access to VPS2 (85.239.239.206) — fail2ban blocking sandbox IP
 - [ ] Try Tailscale VPN tunnel as SSH bypass
 - [ ] Try Contabo VNC console as fallback
+
+---
+
+## TRADING INTEL STACK — POLYMARKET + MACRO (NEW)
+- [ ] **PreReason API**: Sign up for fresh free API key at https://www.prereason.com/signup (trial key expired). Free tier = 6 briefings, 60 req/hr. Evaluate for 1 week, then decide on Basic ($19.99/mo)
+- [ ] **Clone Tier 1 repos to VDS**: tradingview/lightweight-charts (14K stars), block/goose (40K stars), rtk-ai/rtk (21K stars), mortada/fredapi (1.2K stars)
+- [ ] **Clone Tier 2 Polymarket repos to VDS**: ent0n29/polybot (330 stars), evan-kolberg/prediction-market-backtesting (307 stars), txbabaxyz/polyrec (141 stars), dylanpersonguy/Polymarket-Trading-Bot (132 stars)
+- [ ] **Paper trade scanner strategy**: Use polymarket-paper-trader to validate "mispriced contracts >6%" Goldman quant strategy before going live
+- [ ] **Set up polyrec dashboard on VDS**: Terminal UI with Chainlink oracle, Binance feed, 70+ indicators
+- [ ] **Evaluate Kreo copy trading bot**: http://t.me/KreoPolyBot — tracks top wallets, auto copies. Only after paper trading validates
+- [ ] **Analyze @maskache2 on Polymarket**: polymarket.com/@maskache2 — check P&L, position sizes, market selection for copy trading
+- [ ] **DarkWire Intel**: SKIP for now (paywalled). Revisit when Polymarket bot is profitable. Congressional trade cross-referencing could add alpha
+- [ ] **Additional repos from @kepochnik**: TauricResearch/TradingAgents, mvanhorn/last30days-skill, FiatFiorino/polymarket-assistant-tool, txbabaxyz/collectmarkets2, txbabaxyz/mlmodelpoly
+- [ ] **PreReason MCP server**: Install `npx -y @prereason/mcp` on VDS for native Claude/agent tool access once API key is active
 
 ---
 
