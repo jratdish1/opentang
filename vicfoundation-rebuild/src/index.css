@@ -1,0 +1,207 @@
+/*
+ * VIC FOUNDATION — "Honor Through Action"
+ * Design: Military-warm professional charity aesthetic
+ * Palette: Deep Navy, Olive Drab, Gold, Crimson, Off-White
+ * Typography: Oswald (headlines) + Source Sans 3 (body)
+ */
+
+@import "tailwindcss";
+
+@theme inline {
+  --color-navy: oklch(0.15 0.04 250);
+  --color-navy-light: oklch(0.22 0.04 250);
+  --color-navy-dark: oklch(0.10 0.04 250);
+  --color-olive: oklch(0.45 0.08 130);
+  --color-olive-light: oklch(0.55 0.08 130);
+  --color-olive-dark: oklch(0.35 0.08 130);
+  --color-gold: oklch(0.75 0.12 85);
+  --color-gold-light: oklch(0.82 0.10 85);
+  --color-gold-dark: oklch(0.65 0.14 85);
+  --color-crimson: oklch(0.50 0.20 25);
+  --color-crimson-light: oklch(0.58 0.18 25);
+  --color-offwhite: oklch(0.96 0.01 90);
+  --color-warm-gray: oklch(0.88 0.01 90);
+  --color-text-dark: oklch(0.20 0.02 250);
+  --color-text-muted: oklch(0.50 0.02 250);
+
+  --font-heading: 'Oswald', sans-serif;
+  --font-body: 'Source Sans 3', sans-serif;
+}
+
+/* Base resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-dark);
+  background: var(--color-offwhite);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Utility classes */
+.section-padding {
+  padding: 5rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding: 6rem 2rem;
+  }
+}
+
+.container-vic {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Gold accent underline for headings */
+.heading-accent {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.75rem;
+}
+
+.heading-accent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: var(--color-gold);
+}
+
+.heading-accent-center::after {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Button styles */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: var(--color-gold);
+  color: var(--color-navy-dark);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: var(--color-gold-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px oklch(0.75 0.12 85 / 40%);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: transparent;
+  color: var(--color-offwhite);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 2px solid var(--color-gold);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-gold);
+  color: var(--color-navy-dark);
+  transform: translateY(-2px);
+}
+
+.btn-crimson {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: var(--color-crimson);
+  color: white;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-crimson:hover {
+  background: var(--color-crimson-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px oklch(0.50 0.20 25 / 40%);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-navy-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-olive);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
