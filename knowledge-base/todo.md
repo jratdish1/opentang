@@ -59,8 +59,13 @@
   - Polymarket: Sports (MLB/NBA/NFL), Geopolitics (0% fee), Crypto, Politics
   - Kalshi: Financial markets, economic events, weather, policy (no sports)
   - APEX Blueprint: 4-bot fleet (SENTINEL/ORACLE/ATLAS/SCOUT) documented
-- [ ] Fix USDC.e auto-refill: Switch to Uniswap V3 SwapRouter02 + 5% slippage
-- [ ] Send USDC.e via Kraken API (Polygon network) to Polymarket wallet
+- [x] Fix USDC.e auto-refill: Uniswap V3 SwapRouter02 + 5% slippage — DEPLOYED + FUNDED
+  - V2 script at /opt/polymarket-bot/usdc_auto_refill.py
+  - Wired into bs_polymarket_bot.py scan loop (runs every cycle in LIVE mode)
+  - $1,000/day spend cap with autoscale (60% of balance, min $100, max $1K)
+- [x] Send USDC.e to Polymarket wallet — DONE (user sent $51.47 USDC via Kraken mobile app → Polygon)
+  - Confirmed on-chain via Polygonscan: 51.47 USDC.e + 196 POL for gas
+  - Bot actively trading with new funds, redeeming positions and recycling
 - [x] Add green/yellow/red traffic light indicators to Telegram notifications — ALREADY DONE
   - daily_trading_report.py has full 🟢🟡🔴 traffic lights for all bots
   - Runs every 4 hours via cron, sends to Telegram
@@ -70,6 +75,13 @@
   - daily_arb_summary.py runs daily at 23:00 UTC
   - daily_trading_report.py runs every 4h (Kraken+Kalshi+Polymarket)
 - [ ] Set up P&L tracking for BASE HABFF bots
+- [x] Deploy Polymarket bot upgrades from Lunar Researcher analysis — DONE
+  - Whale Tracking: scans top 50 wallets every 6h via cron
+  - Multi-Agent Consensus Filter: 3-signal agreement (quant + whale + microstructure)
+  - Early Exit: 85% profit target, 3x volume spike, trailing stop (15%→5%)
+  - Market Microstructure Scoring: spread/depth/volume analysis
+  - Cloned poly_data + polymarket-agents repos to VDS for future use
+  - All pushed to GitHub (apex-agent + opentang repos)
 
 ## PRIORITY 2 — HERO Farm & HABFF
 - [ ] Build HABFF contract for BASE chain (Aerodrome + Uniswap)
@@ -86,7 +98,13 @@
 - [x] Add EMIT Farm section on mobile — DONE (Farm.tsx has HERO/EMIT + VETS/EMIT LP pairs)
 - [x] Remove "Made with Manus" link — DONE (CSS refs removed, no footer link visible)
 - [x] Fix Switch Aggregator widget — VERIFIED WORKING (live prices, multi-DEX, iframe loads)
-- [ ] Fix text overlapping live feed numbers on mobile — LiveTicker has overflow-x-auto + shrink-0, may need testing on real device
+- [x] Fix text overlapping live feed numbers on mobile — DEPLOYED
+  - Reduced font size on mobile (text-[10px] sm:text-xs)
+  - Added whitespace-nowrap to all price elements
+  - Tighter gaps on mobile (gap-1.5 sm:gap-2, gap-4 sm:gap-6)
+  - Hidden volume on xs screens to prevent overflow
+  - Touch-friendly scrolling (WebkitOverflowScrolling: touch)
+  - Built, restarted PM2, purged Cloudflare cache
 - [x] Fix/redo bouncing logo video — No bounce animation found in codebase, likely already fixed
 
 ## PRIORITY 4 — VicFoundation.com
@@ -95,6 +113,9 @@
 ## FUTURE / LOW PRIORITY
 - [ ] Evaluate LarryBrain for marketing automation
 - [ ] Build HERO/VETS promotional videos
+- [ ] Fix Polymarket leaderboard API endpoint (404) — whale scanner needs working URL
+- [ ] Integrate poly_data Goldsky subgraph for deeper wallet analysis
+- [ ] Install polymarket-cli (Rust) on Hetzner for fast market scanning
 
 ## ACTIVE BOT STATUS (as of 2026-04-22 20:06 UTC)
 
@@ -106,7 +127,7 @@
 | VDS | base-hero-vol | 🟢 ONLINE | 38h | Scan #12,250, 352 vol trades |
 | VDS | cross-chain-monitor | 🟢 ONLINE | 37h | Price tracker |
 | VDS | polymarket-bot | 🔴 STOPPED | — | Geo-blocked, replaced by Hetzner |
-| Hetzner EU | polymarket-bot | 🟢 ONLINE | 91m | Balance: $10.80, 40 pos, Value: $237.70, P&L: +$7.90 |
+| Hetzner EU | polymarket-bot | 🟢 ONLINE | 2h+ | Balance: $24.43, 40 pos, Value: $245.32, P&L: +$6.43 |
 | VPS1 | hero-dapp | 🟢 ONLINE | 15h | herobase.io |
 | VPS1 | Hero-ABLE + Base | 🟢 ONLINE | 14h | ABLE bots |
 | VPS1 | hero-vets-pulse | 🟢 ONLINE | 19h | Backup |
