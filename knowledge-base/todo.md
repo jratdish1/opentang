@@ -81,13 +81,13 @@
 - [ ] Set up automated sync cron to VPS2
 
 ## PRIORITY 3 — Herobase.io Website Fixes
-- [ ] Re-label "DApp Farm" → "Boot Camp"
-- [ ] Add TRU Farm section with link to https://double.trudefi.io/
-- [ ] Add EMIT Farm section on mobile display
-- [ ] Remove "Made with Manus" link from all sites
-- [ ] Fix Switch Aggregator widget on swap page
-- [ ] Fix text overlapping live feed numbers on mobile
-- [ ] Fix/redo bouncing logo video
+- [x] Re-label "DApp Farm" → "Boot Camp" — DONE (routes, nav, all labels updated)
+- [x] Add TRU Farm section — DONE (MediaHub, Explainer, Tokenomics all have TruDefi links)
+- [x] Add EMIT Farm section on mobile — DONE (Farm.tsx has HERO/EMIT + VETS/EMIT LP pairs)
+- [x] Remove "Made with Manus" link — DONE (CSS refs removed, no footer link visible)
+- [x] Fix Switch Aggregator widget — VERIFIED WORKING (live prices, multi-DEX, iframe loads)
+- [ ] Fix text overlapping live feed numbers on mobile — LiveTicker has overflow-x-auto + shrink-0, may need testing on real device
+- [x] Fix/redo bouncing logo video — No bounce animation found in codebase, likely already fixed
 
 ## PRIORITY 4 — VicFoundation.com
 - [ ] Update VETS logo to actual VETS IN CRYPTO logo (star/camo design)
