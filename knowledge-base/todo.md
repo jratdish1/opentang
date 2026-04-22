@@ -1,4 +1,4 @@
-# Task Queue — 2026-04-22 (Updated 20:10 UTC)
+# Task Queue — 2026-04-22 (Updated 23:10 UTC)
 
 ## COMPLETED (Archived)
 - [x] Fix default swap output token from NUTS to HERO in Swap.tsx
@@ -84,10 +84,21 @@
   - All pushed to GitHub (apex-agent + opentang repos)
 
 ## PRIORITY 2 — HERO Farm & HABFF
-- [ ] Build HABFF contract for BASE chain (Aerodrome + Uniswap)
-- [ ] Deploy HABFF contract from VDS wallet on BASE
-- [ ] Configure HABFF bot for all HERO BASE pairs
+- [x] Build HABFF contract for BASE chain (Aerodrome + Uniswap V2 dual-router) — DONE
+  - Contract: 0x1e8B3A00E6fD7A79F8E1a7F5eDb1bA652b288c55 on BASE
+  - Features: crossDexArb (atomic buy/sell across DEXes), multiSwap, approveToken, getStats
+  - All 4 approvals on-chain: HERO+WETH → UniV2+Aerodrome
+  - 5,000 HERO loaded in contract
+- [x] Deploy HABFF contract from VDS wallet on BASE — DEPLOYED
+  - Owner/Signer: 0xeb2C36C1804A8D4c68a2033dEe5ACc1294bD24e6
+  - BaseScan: https://basescan.org/address/0x1e8B3A00E6fD7A79F8E1a7F5eDb1bA652b288c55
+- [x] Configure HABFF bot for all HERO BASE pairs — LIVE on VDS
+  - Volume trades: wallet → UniV2 (HERO→WETH→HERO round-trips)
+  - Cross-DEX arb: contract → buy on one DEX, sell on other (waiting for Aerodrome HERO pool)
+  - Scans every 20s, volume trades every 10min
+  - NOTE: Aerodrome has NO HERO/WETH pool yet — cross-DEX arb auto-activates when pool exists
 - [ ] Get HABFF contract address fee-exempted on BASE
+- [ ] Create HERO/WETH pool on Aerodrome to enable cross-DEX arb
 - [ ] Add DeFi yield strategies image to basehero.io farm page
 - [ ] Mirror VDS/VPS3 configs to VPS2 (belt & suspenders backup)
 - [ ] Set up automated sync cron to VPS2
@@ -113,7 +124,10 @@
 ## FUTURE / LOW PRIORITY
 - [ ] Evaluate LarryBrain for marketing automation
 - [ ] Build HERO/VETS promotional videos
-- [ ] Fix Polymarket leaderboard API endpoint (404) — whale scanner needs working URL
+- [x] Fix Polymarket leaderboard API endpoint — FIXED
+  - Old URL: /leaderboard (404) → New URL: /v1/leaderboard ✅
+  - Old field: userAddress (empty) → New field: proxyWallet ✅
+  - Whale scanner now tracks top 50 wallets, caches positions every 6h
 - [ ] Integrate poly_data Goldsky subgraph for deeper wallet analysis
 - [ ] Install polymarket-cli (Rust) on Hetzner for fast market scanning
 
@@ -127,6 +141,7 @@
 | VDS | base-hero-vol | 🟢 ONLINE | 38h | Scan #12,250, 352 vol trades |
 | VDS | cross-chain-monitor | 🟢 ONLINE | 37h | Price tracker |
 | VDS | polymarket-bot | 🔴 STOPPED | — | Geo-blocked, replaced by Hetzner |
+| VDS | habff-arb | 🟢 ONLINE | NEW | Contract: 0x1e8B...8c55, 5K HERO, volume trading |
 | Hetzner EU | polymarket-bot | 🟢 ONLINE | 2h+ | Balance: $24.43, 40 pos, Value: $245.32, P&L: +$6.43 |
 | VPS1 | hero-dapp | 🟢 ONLINE | 15h | herobase.io |
 | VPS1 | Hero-ABLE + Base | 🟢 ONLINE | 14h | ABLE bots |
@@ -148,6 +163,10 @@
 - PulseChain gas: always use 2M gwei custom gas
 - BASE gas: auto (standard)
 - Aerodrome getAmountsOut broken for fee-on-transfer tokens — use direct reserve reads
+- HABFF contract multiSwap has 'Must gain hero overall' check — volume trades must go through wallet, not contract
+- Aerodrome has NO HERO/WETH pool on BASE — cross-DEX arb will auto-activate when pool is created
+- HERO on BASE has NO transfer fee (unlike PulseChain HERO which has 3% tax)
+- GitHub is master fallback KB (Manus KB is full) — all new knowledge goes to apex-agent + opentang repos
 - VPS1 reachable via 62.146.175.67 (Tailscale was flaky, public IP works)
 - VPS3 reachable via SSH config on VDS (195.26.253.100)
 - Cloudflare API works from VDS only (IP-restricted) — back door for DNS changes
