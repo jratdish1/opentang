@@ -1,4 +1,4 @@
-# Task Queue — 2026-04-22 (Updated 23:10 UTC)
+# Task Queue — 2026-04-22 (Updated 23:55 UTC)
 
 ## COMPLETED (Archived)
 - [x] Fix default swap output token from NUTS to HERO in Swap.tsx
@@ -74,7 +74,9 @@
   - hero_farm_pnl.py runs daily at 23:00 UTC via cron
   - daily_arb_summary.py runs daily at 23:00 UTC
   - daily_trading_report.py runs every 4h (Kraken+Kalshi+Polymarket)
-- [ ] Set up P&L tracking for BASE HABFF bots
+- [x] Set up P&L tracking for BASE HABFF bots — DEPLOYED
+  - habff_pnl_tracker.py runs every 4h (offset 30min from trading report)
+  - Reports: contract HERO, wallet HERO, WETH, ETH gas, price, total value, contract stats
 - [x] Deploy Polymarket bot upgrades from Lunar Researcher analysis — DONE
   - Whale Tracking: scans top 50 wallets every 6h via cron
   - Multi-Agent Consensus Filter: 3-signal agreement (quant + whale + microstructure)
@@ -96,12 +98,22 @@
   - Volume trades: wallet → UniV2 (HERO→WETH→HERO round-trips)
   - Cross-DEX arb: contract → buy on one DEX, sell on other (waiting for Aerodrome HERO pool)
   - Scans every 20s, volume trades every 10min
-  - NOTE: Aerodrome has NO HERO/WETH pool yet — cross-DEX arb auto-activates when pool exists
+  - UPDATE: Aerodrome HERO/WETH pool EXISTS at 0xb813599dd596C179C8888C8A4Bd3FEC8308D1E20
+  - Uniswap V2 HERO/WETH pool at 0x3Bb159de8604ab7E0148EDC24F2A568c430476CF
+  - Cross-DEX arb scanning active, fires when spread > 1.5%
 - [ ] Get HABFF contract address fee-exempted on BASE
-- [ ] Create HERO/WETH pool on Aerodrome to enable cross-DEX arb
-- [ ] Add DeFi yield strategies image to basehero.io farm page
-- [ ] Mirror VDS/VPS3 configs to VPS2 (belt & suspenders backup)
-- [ ] Set up automated sync cron to VPS2
+- [x] Create HERO/WETH pool on Aerodrome — ALREADY EXISTS
+  - Aerodrome: 0xb813599dd596C179C8888C8A4Bd3FEC8308D1E20 ($4.7K liq, $0.0485)
+  - Uniswap V2: 0x3Bb159de8604ab7E0148EDC24F2A568c430476CF ($4.0K liq, $0.0485)
+- [x] Add DeFi yield strategies image to basehero.io farm page — ALREADY EXISTS
+  - Full infographic visible at bottom of /farm page (Closed-Loop DeFi Ecosystem section)
+  - Shows TruFarms + EMIT farming flows with compound earnings
+- [x] Mirror VDS/VPS3 configs to VPS2 — DEPLOYED
+  - First sync complete: 64KB of bot configs, knowledge, env, crons, PM2 dump
+  - Cron: every 6h (0 */6 * * *)
+- [x] Set up automated sync cron to VPS2 — DEPLOYED
+  - mirror_to_vps2.sh runs every 6h
+  - Syncs: bot configs, env_architecture, knowledge, crontabs, PM2 ecosystem
 
 ## PRIORITY 3 — Herobase.io Website Fixes
 - [x] Re-label "DApp Farm" → "Boot Camp" — DONE (routes, nav, all labels updated)
@@ -164,7 +176,9 @@
 - BASE gas: auto (standard)
 - Aerodrome getAmountsOut broken for fee-on-transfer tokens — use direct reserve reads
 - HABFF contract multiSwap has 'Must gain hero overall' check — volume trades must go through wallet, not contract
-- Aerodrome has NO HERO/WETH pool on BASE — cross-DEX arb will auto-activate when pool is created
+- Aerodrome HERO/WETH pool EXISTS: 0xb813599dd596C179C8888C8A4Bd3FEC8308D1E20 ($4.7K liq)
+- Uniswap V2 HERO/WETH pool: 0x3Bb159de8604ab7E0148EDC24F2A568c430476CF ($4.0K liq)
+- HABFF cross-DEX arb scanning active, fires when spread > 1.5%
 - HERO on BASE has NO transfer fee (unlike PulseChain HERO which has 3% tax)
 - GitHub is master fallback KB (Manus KB is full) — all new knowledge goes to apex-agent + opentang repos
 - VPS1 reachable via 62.146.175.67 (Tailscale was flaky, public IP works)
