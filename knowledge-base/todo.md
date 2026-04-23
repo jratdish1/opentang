@@ -271,3 +271,15 @@
 - [ ] Go live on BASE mainnet
 - [ ] Go live on PulseChain mainnet
 - [ ] Publish RNG feed on-chain (25 eDAI for RNG FLOW)
+
+## COMPLETED — 2026-04-23 (Session 3: Whitepaper v2.0)
+- [x] HERO Whitepaper v2.0 — 20 sections, 7-phase roadmap, mirrors herobase.io exactly
+- [x] Updated dual-chain NFT blueprints v2.0 — 555 cards, 6-tier fee reduction, 10 utilities
+- [x] Codex audit (GPT-4.1-mini) — 3 documents audited, 0 FAIL, all PASS/WARN
+- [x] Fixed General (O-10) rank fee reduction clarity (7% exceeds 5% base = zero-fee + 2% rebate)
+- [x] Added Ultra Rare utility tier clarification to both blueprints
+- [x] Enhanced Risk Disclosures: security considerations, legal disclaimers, regulatory notes
+- [x] All documents pushed to GitHub KB (opentang/knowledge-base)
+- [x] Files: hero-whitepaper/HERO_WHITEPAPER_V2.md, hero-whitepaper/DOC_AUDIT_REPORT.md
+- [x] Files: blueprints/nft/HERO_NFT_BASE_CHAIN_BLUEPRINT.md, HERO_NFT_PULSECHAIN_BLUEPRINT.md
+- [x] Files: blueprints/nft/IMMUTABLE_NFT_SPEC.md, blueprints/nft/ARTIST_GUIDE.md
