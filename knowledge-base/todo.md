@@ -184,3 +184,15 @@
 - VPS1 reachable via 62.146.175.67 (Tailscale was flaky, public IP works)
 - VPS3 reachable via SSH config on VDS (195.26.253.100)
 - Cloudflare API works from VDS only (IP-restricted) — back door for DNS changes
+
+## RNG MODULES — COMPLETED (2026-04-23)
+- [x] DAO RNG Fallback — quarterly charity voting with auto-fallback (DEPLOYED)
+- [x] NFT Trait Randomness — provably fair trait assignment (DEPLOYED)
+- [x] Community Giveaways/Raffles — weighted winner selection (DEPLOYED)
+- [x] HERO Holder Rewards — weighted random airdrops (DEPLOYED)
+- [x] Daily Spin-the-Wheel — gamification engagement (DEPLOYED)
+- [x] Shared RNG Engine + Email Notification modules (DEPLOYED)
+- [x] Codex Audit — 0 CRITICAL, 0 HIGH, all 12 modules audited
+- [x] Grok Bot Fleet Evaluation — integration recommendations generated
+- [ ] VRF integration for on-chain T2/T3 tiers (FUTURE)
+- [ ] RNG FLOW feed publication on PulseChain (25 eDAI, FUTURE)
