@@ -1,5 +1,5 @@
 # VETS IN CRYPTO — Master Todo
-## Updated: 2026-04-23
+## Updated: 2026-04-23 (Session 2)
 
 ---
 
@@ -70,16 +70,29 @@
 - [ ] HERO/VETS promo videos
 - [ ] VicFoundation VETS logo update
 - [ ] DeFi yield strategies image for basehero.io
-- [ ] Set up P&L tracking for BASE HABFF bots
-- [ ] Mirror VDS/VPS3 configs to VPS2 (backup)
-- [ ] Automated sync cron to VPS2
+- [x] Set up P&L tracking for BASE HABFF bots (running every 4h)
+- [x] Mirror VDS/VPS3 configs to VPS2 (backup)
+- [x] Automated sync cron to VPS2 (weekly cron)
 
+
+### herobase.io — New Features (from squirrels.pro analysis)
+- [ ] Ecosystem Directory — PulseChain + BASE project listings with categories, search, favorites
+- [ ] Live Chain Stats Widget — real-time gas, TVL, volume, block height for PulseChain + BASE
+- [ ] Transaction Cost Calculator — current gas costs for swaps, approvals, transfers
+- [ ] Approval Manager — view/revoke token approvals (security feature)
+- [ ] DEX Pool/Volume Analytics — HERO/VETS pool stats across DEXs
+- [ ] Buy & Burn Tracker — HERO burn stats with charts (if applicable)
+- [ ] RNG FLOW Integration — provably fair giveaways/raffles for HERO community (T1 free tier)
+
+### Weather Bot
+- [x] Weather prediction bot v2 deployed on VDS (26 signals, 10 cities)
+- [x] Weather bot switched to LIVE mode (was DRY RUN) — cron every 6h with --live flag
 ### LOW PRIORITY — Backlog
 - [ ] Evaluate Kreo copy trading bot (requires Telegram interaction)
 - [ ] DarkWire Intel (paywalled)
-- [ ] Build Black-Scholes Polymarket bot (KB requirement)
-- [ ] Paper trade scanner strategy (PreReason API ready)
-- [ ] Stripe checkout DNS fix for regenvalor.com
+- [x] Build Black-Scholes Polymarket bot (polymarket-cli v0.1.4 on Hetzner EU)
+- [x] Paper trade scanner strategy (running on VDS)
+- [x] Stripe checkout DNS fix for regenvalor.com (CNAME added in Cloudflare)
 
 ---
 
