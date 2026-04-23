@@ -225,3 +225,27 @@
 - [ ] Build RNG Monitor Bot, Governance Bot, Security Bot, Price Oracle, Liquidity Bot
 - [ ] Consolidate low-value GitHub repos
 - [ ] Multilingual herobase.io (ON HOLD)
+
+## COMPLETED — 2026-04-23 (Session 2)
+- [x] V4 Audit: Fixed all 8 HIGH findings (BigInt precision, VRF requestId, median calc)
+- [x] V4 Audit: Fixed 3 MEDIUM findings (numWords validation, contract error handling)
+- [x] Built 5 new bots: RNG Monitor, Governance, Security, Price Oracle, Liquidity Analytics
+- [x] Deployed 5 bots to VDS with staggered cron schedules (70 total cron jobs)
+- [x] Staggered all */30 cron jobs to reduce contention
+- [x] Fixed hero-farm-v6 (datetime deprecation + restart)
+- [x] Fixed hero-vets-pulse (nonce collision retry logic, reset 96 restarts)
+- [x] Built Immutable NFT Spec (no admin, no kill switch, true ownership)
+- [x] Built Artist Integration Pipeline (compositor + metadata + IPFS + utility binding)
+- [x] Built Artist Onboarding Guide
+- [x] Hardened VDS security: blocked ports 3306, 4500, 5678 via UFW
+- [x] Memory limits: polymarket-bot 300MB, kraken-bot-v2 200MB, kalshi-bot-v4 200MB
+- [x] All code pushed to GitHub (hero-dapp c5ff8c3, knowledge-base updated)
+
+## REMAINING TODO
+- [ ] Publish RNG feed on-chain (25 eDAI — need wallet address)
+- [ ] Configure HERO/VETS contract addresses for Price Oracle + Security Bot + Liquidity Analytics
+- [ ] Consolidate low-value GitHub repos (quarterly review)
+- [ ] Multilingual herobase.io (ON HOLD)
+- [ ] Claude-Obsidian knowledge base upgrade
+- [ ] VDS/VPS monitoring dashboard (green/yellow/red)
+- [ ] Investigate hero-farm-v6 long-term stability
