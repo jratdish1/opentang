@@ -473,12 +473,12 @@ All bots log to structured files and can trigger alerts via email notification.
 
 ## 15. Cross-Chain Architecture
 
-HERO operates identically on PulseChain and BASE with deterministic contract deployment (same addresses on both chains).
+HERO operates on both PulseChain and BASE with independent contract deployments. The contract addresses are **different on each chain** — each chain has its own token contract and buy-and-burn contract.
 
 | Feature | PulseChain | BASE |
 |---------|-----------|------|
-| Token Address | 0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8 | 0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8 |
-| Buy & Burn Address | 0x67bEF0A8Be3ef576bF4ab2D904FCbe82E9846670 | 0x67bEF0A8Be3ef576bF4ab2D904FCbe82E9846670 |
+| Token Address | `0x35a51Dfc82032682E4Bda8AAcA87B9Bc386C3D27` | `0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8` |
+| Buy & Burn Address | `0x9016a0DAA30bD29A51a1a2905352877947f904E9` | `0x67bEF0A8Be3ef576bF4ab2D904FCbe82E9846670` |
 | NFT Collection | 1,000 NFTs (independent) | 1,000 NFTs (independent) |
 | NFT Mint Price | 100,000 PLS | 0.001 ETH |
 | NFT Fee Discount | 2% on PulseChain $HERO only | 2% on BASE $HERO only |
@@ -598,12 +598,12 @@ The ecosystem relies on external systems including DEX routers, Chainlink oracle
 ### PulseChain
 
 | Contract | Address |
-|----------|---------|
-| HERO Token | `0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8` |
-| HERO Buy & Burn | `0x67bEF0A8Be3ef576bF4ab2D904FCbe82E9846670` |
+|----------|--------|
+| HERO Token | `0x35a51Dfc82032682E4Bda8AAcA87B9Bc386C3D27` |
+| HERO Buy & Burn | `0x9016a0DAA30bD29A51a1a2905352877947f904E9` |
 | HERO NFT | TBD (pending deployment) |
 
-Note: Token and Buy & Burn contracts share the same addresses on both chains via deterministic deployment.
+> **Important:** Contract addresses are **different on each chain**. PulseChain and BASE have independent deployments with separate token and buy-and-burn contracts.
 
 ---
 
