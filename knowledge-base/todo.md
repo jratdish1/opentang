@@ -46,7 +46,7 @@
 - [x] VPS2 is BACK ONLINE — all services running (atfoam-api, regen-valor, valor-peptides, hero bots)
 
 ## PENDING — FUNDING NEEDED (User Action)
-- [ ] VPS1: Hero-ABLE-Base needs ETH on BASE for gas (only 0.0001 ETH)
+- [x] VPS1: Hero-ABLE-Base migrated to VPS3 (no longer on VPS1 after swap hack)
 - [ ] VDS: hero-arb-bot needs WETH funding before restart
 
 ## PRIORITY 1 — Trading Bot Tasks
@@ -156,7 +156,7 @@
 | VDS | habff-arb | 🟢 ONLINE | NEW | Contract: 0x1e8B...8c55, 5K HERO, volume trading |
 | Hetzner EU | polymarket-bot | 🟢 ONLINE | 2h+ | Balance: $24.43, 40 pos, Value: $245.32, P&L: +$6.43 |
 | VPS1 | hero-dapp | 🟢 ONLINE | 15h | herobase.io |
-| VPS1 | Hero-ABLE + Base | 🟢 ONLINE | 14h | ABLE bots |
+| VPS1 | (ABLE removed) | — | — | ABLE bots migrated to VPS3 after swap hack |
 | VPS1 | hero-vets-pulse | 🟢 ONLINE | 19h | Backup |
 | VPS1 | base-hero-vol | 🟢 ONLINE | 19h | Backup |
 | VPS2 | atfoam-api | 🟢 ONLINE | 70m | at-foam.com chatbot |
@@ -283,3 +283,19 @@
 - [x] Files: hero-whitepaper/HERO_WHITEPAPER_V2.md, hero-whitepaper/DOC_AUDIT_REPORT.md
 - [x] Files: blueprints/nft/HERO_NFT_BASE_CHAIN_BLUEPRINT.md, HERO_NFT_PULSECHAIN_BLUEPRINT.md
 - [x] Files: blueprints/nft/IMMUTABLE_NFT_SPEC.md, blueprints/nft/ARTIST_GUIDE.md
+
+## SESSION 2026-04-24 — Completed
+- [x] Fix VPS1 MariaDB — rogue Python process on port 3306, killed, added mariadb to watchdog
+- [x] Fix Kraken bot API endpoint bug — `/0/private/Balance` doubled path, fixed to `Balance`
+- [x] Update ALL daily limits to $1,000:
+  - Kraken: $500 → $1,000
+  - Kalshi: $200 → $1,000
+  - Polymarket: $50 max loss → $1,000, position cap $50 → $200
+- [x] Hero-ABLE bots confirmed on VPS3 ONLY (removed from VPS1 after swap hack)
+- [x] Polymarket confirmed LIVE on Hetzner EU (Helsinki) via SOCKS5 proxy — geo-unblocked
+- [x] Updated MASTER_KNOWLEDGE_SOP.md with correct server assignments
+- [x] Whitepaper v2.0 updated: PulseChain CA & Buy-and-Burn addresses corrected
+- [x] hero_farm_arb.py: Fixed placeholder PulseChain addresses (0x0000...0000)
+- [x] hero_farm_v6.py: Fixed datetime.UTC → timezone.utc
+- [x] DexScreener verified all 5 LP pairs (BASE + PulseChain)
+- [x] HABFF contract fee exemption confirmed on-chain (isFeeExempt = TRUE)

@@ -16,7 +16,7 @@
 | Server | IP | Role | SSH Access |
 |--------|-----|------|------------|
 | **VDS (Main Hub)** | 147.93.183.207 | Trading bots, Goose agents, Ollama, Telegram alerts | Direct SSH from sandbox |
-| **VPS1** | 62.146.175.67 | herobase.io, ABLE bots, backups | Via VDS jump: `ssh -J root@147.93.183.207 root@62.146.175.67` |
+| **VPS1** | 62.146.175.67 | herobase.io, web hosting, backups | Via VDS jump: `ssh -J root@147.93.183.207 root@62.146.175.67` |
 | **VPS2** | 85.239.239.206 | at-foam.com, regen-valor, valor-peptides, backups | Via VDS jump: `ssh -J root@147.93.183.207 root@85.239.239.206` |
 | **VPS3** | (Tailscale: vps3) | Primary ABLE bots, trade logging, backups | Via VDS: `ssh vps3` |
 | **Hetzner EU** | (Tailscale: polymarket-eu) | Polymarket bot (geo-unblocked) | Via VDS: `ssh polymarket-eu` |
@@ -66,9 +66,9 @@ source /root/.env_architecture
 | VDS | hero-vets-pulse | PulseChain HERO/VETS volume | PM2 on VDS |
 | VDS | base-hero-vol | BASE chain HERO volume | PM2 on VDS |
 | VDS | cross-chain-monitor | PulseChain vs BASE price tracking | PM2 on VDS |
-| Hetzner | polymarket-bot | Black-Scholes Polymarket (40 positions) | PM2 on Hetzner EU |
+| Hetzner EU (Helsinki) | polymarket-bot | Black-Scholes Polymarket (40 positions) via SOCKS5 proxy | PM2 on Hetzner EU — LIVE, geo-unblocked |
 | VPS1 | hero-dapp | herobase.io website | PM2 on VPS1 |
-| VPS1/VPS3 | Hero-ABLE bots | ABLE trading bots | PM2 |
+| VPS3 | Hero-ABLE bots | ABLE trading bots (PRIMARY — migrated from VPS1 after swap hack) | PM2 on VPS3 |
 | VPS2 | atfoam-api | AT Foam chatbot (Grok AI) | PM2 on VPS2 |
 
 ### Trading Bot SOPs
