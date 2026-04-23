@@ -249,3 +249,25 @@
 - [ ] Claude-Obsidian knowledge base upgrade
 - [ ] VDS/VPS monitoring dashboard (green/yellow/red)
 - [ ] Investigate hero-farm-v6 long-term stability
+
+## HERO NFT DUAL-CHAIN BLUEPRINTS (COMPLETED 2026-04-23)
+- [x] BASE Chain Blueprint — HERO_NFT_BASE_CHAIN_BLUEPRINT.md
+- [x] PulseChain Blueprint — HERO_NFT_PULSECHAIN_BLUEPRINT.md
+- [x] Immutable NFT Spec v2.0 — IMMUTABLE_NFT_SPEC.md
+- [x] 2% Fee Discount Utility — baked into both blueprints
+- [x] Flash Loan Protection — minimum 1-block hold duration
+- [x] Chainlink VRF (BASE) + Commit-Reveal (PulseChain) RNG
+- [x] Artist Guide — ARTIST_GUIDE.md
+- [x] Artist Pipeline — image compositor + metadata generator
+- [x] All pushed to GitHub KB: blueprints/herobase-nft/
+
+### REMAINING NFT ITEMS:
+- [ ] Artist delivers layer PNGs
+- [ ] Generate 1,000 composite images per chain
+- [ ] Upload to IPFS (Pinata + nft.storage)
+- [ ] Deploy contracts on BASE Sepolia testnet
+- [ ] Deploy contracts on PulseChain testnet v4
+- [ ] Test full mint + fee discount flow end-to-end
+- [ ] Go live on BASE mainnet
+- [ ] Go live on PulseChain mainnet
+- [ ] Publish RNG feed on-chain (25 eDAI for RNG FLOW)
