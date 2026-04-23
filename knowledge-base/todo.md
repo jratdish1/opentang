@@ -196,3 +196,32 @@
 - [x] Grok Bot Fleet Evaluation — integration recommendations generated
 - [ ] VRF integration for on-chain T2/T3 tiers (FUTURE)
 - [ ] RNG FLOW feed publication on PulseChain (25 eDAI, FUTURE)
+## COMPLETED — 2026-04-23 (Session 2)
+
+### Priority 1: Critical Fixes
+- [x] hero-farm-v6: Fixed datetime deprecation, restarted → ONLINE
+- [x] hero-vets-pulse: Fixed nonce collision with retry → ONLINE, 0 restarts
+- [x] VRF Integration: Chainlink VRF v2.5 (BASE) + Commit-Reveal (PulseChain)
+
+### Priority 2: Codex Audit Fixes (All 12 RNG Modules)
+- [x] CRITICAL: SpinWheel — replaced Math.random() with CSPRNG
+- [x] HIGH: VRF Provider — crypto.randomBytes for secret entropy
+- [x] HIGH: NFT Trait Engine — userSecret anti-frontrunning
+- [x] MEDIUM: BigInt precision, HTML sanitization, DRY fixes
+- [x] LOW: Wallet validation, error context, rate limiting, Promise.all
+
+### Priority 3: Bot Fleet Evaluation
+- [x] Memory limits: polymarket(300MB), kraken(200MB), kalshi(200MB)
+- [x] UFW: Blocked ports 3306, 4500, 5678
+- [x] Cron audit: 65 jobs documented
+
+### Priority 4: Documentation
+- [x] ARCHITECTURE_BLUEPRINT.md — Full 12-module RNG blueprint
+- [x] All audit reports pushed to blueprints/herobase-rng/
+
+### REMAINING TODO
+- [ ] Publish RNG feed on-chain (25 eDAI)
+- [ ] Stagger */30 cron jobs
+- [ ] Build RNG Monitor Bot, Governance Bot, Security Bot, Price Oracle, Liquidity Bot
+- [ ] Consolidate low-value GitHub repos
+- [ ] Multilingual herobase.io (ON HOLD)
