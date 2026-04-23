@@ -37,15 +37,16 @@
 
 HERO is a community-first, purpose-driven token ecosystem built to reward holders, fuel organic growth, and give back to those who served. Every trade contributes to a self-sustaining flywheel of liquidity deepening, supply reduction, staking rewards, and charitable donations — all verifiable on-chain.
 
-The ecosystem operates on two chains — PulseChain and BASE — with identical token contracts, shared infrastructure, and a unified community. The HERO NFT Collection of 555 unique steampunk-military trading cards provides real, on-chain utility including tiered fee reductions, governance power, staking boosts, and exclusive rewards.
+The ecosystem operates on two chains — PulseChain and BASE — with identical token contracts, shared infrastructure, and a unified community. The HERO NFT Collection of 2,000 unique steampunk-military trading cards (1,000 per chain as independent collections) provides real, on-chain utility including a flat 2% fee reduction for all NFT holders, DAO governance voting power, holder rewards, and exclusive community features.
 
 Since the original whitepaper, the ecosystem has grown substantially. This v2.0 document incorporates all live features on herobase.io, the complete NFT utility system, DAO governance with RNG-powered fallback voting, five monitoring bots, and a comprehensive suite of ecosystem tools. The roadmap has been updated to reflect current progress and future milestones.
 
 **Key Metrics:**
 - 100,000,000 HERO initial supply (target: 21,000,000 circulating — the "21 Gun Salute")
-- 555 unique NFT trading cards across 10 military/first-responder categories
+- 2,000 unique NFT trading cards (1,000 per chain) across 6 trait categories
 - 85% of NFT mint revenue directed to charity treasury
-- 6-tier rank system with 1–7% fee reductions for NFT holders
+- Flat 2% fee reduction for all NFT holders (on-chain enforced, flash-loan protected)
+- Independent dual-chain collections — no bridge dependency
 - Live on PulseChain and BASE with identical contract addresses
 
 ---
@@ -122,23 +123,19 @@ The default transfer fee is **5%**, split across the five destinations described
 
 ### 5.2 NFT Holder Fee Reduction
 
-HERO NFT holders receive a tiered fee reduction based on their **Rank** (determined by HERO token holdings). This is the primary utility of the NFT collection and is enforced on-chain.
+HERO NFT holders receive a **flat 2% fee reduction** on all $HERO transfers. This is the primary utility of the NFT collection and is enforced entirely on-chain via `balanceOf` checks. If either the sender or receiver holds a HERO NFT, the transfer fee drops from 5% to 3%.
 
-| Rank | HERO Required | Fee Reduction | Effective Fee |
-|------|--------------|---------------|---------------|
-| No NFT | — | 0% | 5.00% |
-| Private (E-1) | 1,000+ | 1% | 4.00% |
-| Corporal (E-4) | 10,000+ | 2% | 3.00% |
-| Sergeant (E-5) | 50,000+ | 3% | 2.00% |
-| Lieutenant (O-2) | 250,000+ | 4% | 1.00% |
-| Colonel (O-6) | 1,000,000+ | 5% | 0.00% (zero-fee) |
-| General (O-10) | 5,000,000+ | 7% (exceeds 5% base) | 0.00% (zero-fee, plus 2% rebate credit on buys) |
+| Scenario | Sender NFT | Receiver NFT | Fee | Savings |
+|----------|-----------|-------------|-----|--------|
+| Normal transfer | NO | NO | 5.00% | $0 |
+| Sender holds NFT | YES | NO | 3.00% | 2.00% |
+| Receiver holds NFT | NO | YES | 3.00% | 2.00% |
+| Both hold NFTs | YES | YES | 3.00% | 2.00% |
+| DEX router (excluded) | N/A | N/A | 0.00% | N/A |
 
-The fee reduction is calculated in real-time during each transfer. The HERO token contract calls `HeroNFT.getFeeReduction(wallet)` to determine the applicable discount. If either the sender or receiver holds an NFT, the best available reduction applies.
+The fee check is calculated in real-time during each transfer. The HERO token contract calls `HeroNFT.balanceOf(wallet)` to verify NFT holdings. If either the sender or receiver holds an NFT, the 2% discount applies automatically.
 
-> **Clarification on General Rank:** The base transaction fee is 5%. A 7% reduction exceeds the base fee, resulting in a 0% effective fee. The surplus 2% is applied as a rebate credit on buy transactions, effectively rewarding the highest-tier holders. Flash loan protection (1-block minimum hold) prevents abuse of this mechanism.
-
-**Flash Loan Protection:** NFTs must be held for at least 1 block before the fee discount activates. This prevents flash loan attacks where an attacker borrows an NFT, executes a discounted trade, and returns the NFT in the same transaction.
+**Flash Loan Protection:** NFTs must be held for at least 1 block before the fee discount activates. This prevents flash loan attacks where an attacker borrows an NFT, executes a discounted trade, and returns the NFT in the same transaction. The gas cost of the NFT check is approximately 5,200 gas (~$0.001 on BASE, ~$0.0001 on PulseChain) — negligible.
 
 ### 5.3 Sell Fee Decay
 
@@ -203,70 +200,80 @@ All liquidity additions emit `AutoLiquify` events and track cumulative LP value 
 
 ### 8.1 Collection Overview
 
-The HERO NFT Collection consists of **555 unique steampunk-military trading cards** deployed as ERC-721 tokens on both PulseChain and BASE. Each card is a one-of-a-kind digital collectible featuring military personnel, first responders, and historical warriors rendered in a distinctive steampunk-military art style.
+The HERO NFT Collection consists of **2,000 unique steampunk-military trading cards** deployed as ERC-721 tokens on both PulseChain and BASE as independent collections (1,000 per chain). Each card is a one-of-a-kind digital collectible created by layering six trait categories through provably fair RNG, rendered in a distinctive steampunk-military art style.
 
 | Parameter | Value |
 |-----------|-------|
-| **Total Cards** | 555 |
-| **Standard** | ERC-721 (Immutable) |
+| **Total Cards** | 2,000 (1,000 per chain) |
+| **Standard** | ERC-721 (Immutable, ERC-2981 Royalties) |
 | **Theme** | Steampunk-Military Trading Cards |
-| **Categories** | 10 |
-| **Nations Represented** | 50+ |
+| **Trait Categories** | 6 (Background, Outfit, Weapon, Rank, Badge, Special) |
+| **Options per Category** | 9–10 |
+| **Total Possible Combinations** | 810,000+ |
 | **Animated NFTs** | 4 (UK, South Korea, US Marine, Mexico) |
-| **Chains** | PulseChain & BASE |
+| **Chains** | PulseChain (1,000) & BASE (1,000) — Independent |
+| **Max Per Wallet** | 5 per chain |
 | **Metadata Storage** | IPFS (permanent, decentralized) |
+| **Mint Price (BASE)** | 0.001 ETH |
+| **Mint Price (PulseChain)** | 100,000 PLS |
 | **Mint Revenue** | 85% Treasury (Charity), 15% Operations |
 
-### 8.2 Collection Split
+### 8.2 Dual-Chain Independent Collections
 
-The 555 cards are distributed across both chains:
+Each chain has its own independent 1,000-NFT collection. There is no cross-chain bridge dependency. This design eliminates bridge risk, oracle trust assumptions, and additional gas costs.
 
-| Allocation | Count | Description |
-|-----------|-------|-------------|
-| PulseChain Primary | ~185 | Cards minted exclusively on PulseChain |
-| BASE Primary | ~185 | Cards minted exclusively on BASE |
-| Shared | ~185 | Cards available on both chains via bridging |
+| Chain | Collection Size | RNG Method | Mint Price | Fee Discount |
+|-------|----------------|------------|------------|-------------|
+| BASE | 1,000 NFTs | Chainlink VRF v2.5 | 0.001 ETH | 2% on BASE $HERO only |
+| PulseChain | 1,000 NFTs | Commit-Reveal (2-tx) | 100,000 PLS | 2% on PulseChain $HERO only |
 
-### 8.3 Ten Categories
+> **Design Decision:** Holding a BASE NFT gives a 2% discount on BASE $HERO transfers ONLY. Holding a PulseChain NFT gives a 2% discount on PulseChain $HERO transfers ONLY. This keeps the system simple, trustless, and free of bridge risk.
 
-| Category | Count | Description |
-|----------|-------|-------------|
-| International Forces | 131 | Military from 50+ nations worldwide |
-| First Responders | 105 | Fire, police, EMS, rescue, medical |
-| Historical Warriors | 88 | Warriors spanning 3,000+ years of history |
-| Special / Community | 66 | Veteran transition stories, crypto pioneers |
-| US Army | 54 | All ranks, specialties, and diversity |
-| US Marines | 44 | Semper Fi — all ranks and roles |
-| US Navy | 31 | SEALs, pilots, corpsmen, officers |
-| US Air Force | 23 | Pilots, PJs, Thunderbirds, cyber warriors |
-| US Coast Guard | 10 | Rescue swimmers, cutter crews |
-| US Space Force | 8 | Guardians, cyber warriors, orbital ops |
+### 8.3 Six Trait Categories
 
-### 8.4 Card Rarity Tiers
+Each NFT is composed of six layered traits, stacked bottom-to-top. The RNG engine selects one option from each category to create a unique combination.
 
-Card rarity is a **visual attribute** determined at mint via provably fair RNG. It affects the card's appearance (border style, effects) and is permanent — it never changes after minting.
+| Layer | Category | Options | Description |
+|-------|----------|---------|-------------|
+| 1 | **Background** | 10 | Base canvas (Desert Storm, Urban Camo, Holographic, etc.) |
+| 2 | **Outfit** | 10 | Character clothing/armor (BDU Woodland, Dress Blues, Space Force Suit, etc.) |
+| 3 | **Weapon** | 10 | Held item (M16A4, Ka-Bar Knife, Plasma Rifle, Crayon Launcher, etc.) |
+| 4 | **Rank** | 10 | Military rank insignia (Private E-1 through General O-10) |
+| 5 | **Badge** | 9 | Medal/award overlay (Purple Heart, Medal of Honor, Bronze Star, etc.) |
+| 6 | **Special** | 9 | Extra flair (Dog Tags, Aviator Sunglasses, PulseChain Aura, or None) |
 
-| Rarity | Style | Distribution | Count (~) |
-|--------|-------|-------------|-----------|
-| Common | Bronze Metallic | 20% | ~112 |
-| Uncommon | Silver Metallic | 20% | ~111 |
-| Rare | Gold Metallic | 30% | ~166 |
-| Ultra Rare | Purple Diamond | 20% | ~111 |
-| Legendary | Holographic Rainbow | 10% | ~55 |
+With 810,000+ possible combinations, the duplicate probability is less than 0.25% across the full 2,000-piece collection.
 
-Card rarity is independent of the Rank System (Section 10). A Common rarity card held by a wallet with 5,000,000+ HERO tokens would have General rank and receive the maximum 7% fee reduction.
+### 8.4 Trait Rarity Tiers
 
-### 8.5 Immutable Ownership
+Each individual trait has a rarity that determines how often it appears during minting. Rarity is assigned via provably fair RNG and is permanent — it never changes after minting.
 
-The NFT contract is fully immutable with no administrative functions:
+| Rarity | Chance | Color Code | Example Traits |
+|--------|--------|------------|----------------|
+| Common | 50% | Gray | Desert Storm, BDU Woodland, M16A4 |
+| Uncommon | 25% | Green | Ocean Blue, Dress Blues, M249 SAW |
+| Rare | 15% | Blue | Arctic White, Ghillie Suit, Tomahawk |
+| Epic | 7% | Purple | Holographic, Space Force Suit, Plasma Rifle |
+| Legendary | 3% | Gold | American Flag Animated, Mjolnir Power Armor, Infinity Gauntlet |
+
+All NFT holders receive the same flat 2% fee discount regardless of trait rarity. Rarity affects the visual appearance and collectibility of the card, not the fee benefit.
+
+### 8.5 Immutable Ownership (v2.0 Contract)
+
+The HeroNFT v2.0 smart contract (Solidity ^0.8.20, OpenZeppelin v5) is fully immutable with zero admin functions:
 
 - **No owner()** — no admin can change anything post-deployment
 - **No pause()** — the contract cannot be stopped or frozen
 - **No proxy** — no upgrade path, the code is final
 - **No setBaseURI()** — metadata URIs are set at mint and cannot be changed
-- **No withdraw()** — mint funds go directly to treasury (85%) and operations (15%) at mint time
-- **Burnable** — holders can burn their NFT (gone forever, token ID never reused)
+- **No blacklist/whitelist** — anyone can buy, sell, or transfer
+- **Immutable MINTER** — minter address is set in constructor and locked forever
+- **ERC-2981 Royalties** — optional, set in constructor
+- **Burnable** — holders can burn their NFT (gone forever, token ID never reused, removes 2% fee discount if it was the holder's only NFT)
 - **True Ownership** — if you lose your keys, the NFT is gone forever. No recovery, no duplication, no backdoors.
+- **MAX_SUPPLY = 1,000** per chain — hardcoded constant, cannot be changed
+
+**Post-Deployment:** Nothing to do. No admin keys to secure, no multisig to manage, no proxy to worry about. The contract runs forever.
 
 ### 8.6 Animated NFTs
 
@@ -285,105 +292,74 @@ These are stored as video files on IPFS alongside the static card artwork.
 
 The HERO NFT provides real, on-chain utility — not just a profile picture. Every utility is either enforced by smart contract logic or verifiable through on-chain state.
 
-### Phase 1 — Core Utility (Every NFT Holder)
+### Core Utility — Every NFT Holder (On-Chain Enforced)
 
-**1. Fee Reduction**
-Hold an NFT to automatically reduce buy/sell/transfer fees on HERO tokens. The reduction is tiered based on your Rank (determined by HERO token holdings). See Section 10 for the full rank table.
+**1. Flat 2% Fee Discount**
+Every HERO NFT holder receives an automatic 2% reduction on all $HERO transfer fees. This is the primary utility of the NFT and is enforced entirely on-chain.
 
-- On-chain enforcement: HERO token contract calls `HeroNFT.getFeeReduction(wallet)` during every transfer
-- Flash loan protection: 1-block hold minimum
-- Best reduction between sender and receiver applies
+| Scenario | Sender NFT | Receiver NFT | Fee | Savings |
+|----------|-----------|-------------|-----|--------|
+| Normal transfer | NO | NO | 5.00% | $0 |
+| Sender holds NFT | YES | NO | 3.00% | 2.00% |
+| Receiver holds NFT | NO | YES | 3.00% | 2.00% |
+| Both hold NFTs | YES | YES | 3.00% | 2.00% |
+| DEX router (excluded) | N/A | N/A | 0.00% | N/A |
 
-**2. Diamond Hands Rewards**
-The longer you hold your NFT and tokens, the more you earn. A time-weighted staking multiplier rewards loyalty:
+- On-chain enforcement: HERO token contract calls `HeroNFT.balanceOf(wallet)` during every transfer
+- Flash loan protection: NFT must be held for at least 1 block before discount activates
+- If either sender OR receiver holds an NFT, the discount applies
+- Gas cost of NFT check: ~5,200 gas (~$0.001 on BASE, ~$0.0001 on PulseChain) — negligible
 
-| Hold Duration | Multiplier | Bonus |
-|--------------|------------|-------|
-| 0–30 days | 1.0x | Base rate |
-| 30–60 days | 1.1x | +10% |
-| 60–90 days | 1.2x | +20% |
-| 90–180 days | 1.5x | +50% |
-| 180–365 days | 2.0x | +100% |
-| 365+ days | 3.0x (cap) | +200% |
+**2. DAO Voting Power**
+NFT holders receive weighted voting power in HERO DAO governance proposals. Voting power is determined by HERO token balance, with NFT holders eligible to participate in quarterly charity votes and ecosystem decisions.
 
-The multiplier is calculated on-chain using block timestamps. Transferring the NFT resets the timer.
+**3. Holder Rewards**
+NFT holders are eligible for quarterly airdrop rewards. Eligibility is verified via on-chain snapshot of NFT holders using `balanceOf` checks.
 
-### Phase 2 — Enhanced Utility (All Holders)
+**4. Spin Wheel Bonus**
+NFT holders receive extra daily spins on the herobase.io Spin-the-Wheel engagement feature. Verified via `balanceOf` check in the spin engine.
 
-**3. Governance Power**
-NFT holders receive boosted voting power in DAO proposals. The boost scales with rank:
+**5. Giveaway Priority**
+NFT holders receive priority entry in all community raffles and giveaways. Verified via `balanceOf` check in the raffle engine.
 
-| Rank | Governance Multiplier |
-|------|----------------------|
-| Private (E-1) | 1x (base) |
-| Corporal (E-4) | 1.5x |
-| Sergeant (E-5) | 2x |
-| Lieutenant (O-2) | 3x |
-| Colonel (O-6) | 4x |
-| General (O-10) | 5x |
+### Utility Summary
 
-**4. Exclusive Airdrops**
-Periodic airdrops of HERO, VETS, and partner tokens are distributed exclusively to NFT holders. Eligibility is verified on-chain via `isAirdropEligible(wallet)` which checks both NFT ownership and valid holding duration.
+| Utility | Description | Implementation |
+|---------|-------------|---------------|
+| **2% Fee Discount** | Reduced fee on all $HERO transfers | On-chain `balanceOf` check |
+| **DAO Voting** | Weighted voting power in HERO DAO | `balanceOf` check in DAO contract |
+| **Holder Rewards** | Eligible for quarterly airdrop rewards | Snapshot of NFT holders |
+| **Spin Wheel Bonus** | Extra daily spins for NFT holders | `balanceOf` check in spin engine |
+| **Giveaway Priority** | Priority entry in community raffles | `balanceOf` check in raffle engine |
 
-### Phase 3 — Premium Utility (Rank-Dependent)
+### Future Utility (Planned)
 
-**5. Staking APY Boost**
-NFT holders receive boosted APY on all staking pools. The boost percentage is determined by rank:
-
-| Rank | APY Boost |
-|------|-----------|
-| Private (E-1) | +5% |
-| Corporal (E-4) | +10% |
-| Sergeant (E-5) | +15% |
-| Lieutenant (O-2) | +25% |
-| Colonel (O-6) | +40% |
-| General (O-10) | +60% |
-
-**6. Rank Promotion**
-As your wallet accumulates more HERO tokens, your NFT rank automatically upgrades — reflecting your true commitment to the ecosystem. Rank is dynamic and recalculated in real-time. If your HERO balance drops below a threshold, your rank adjusts accordingly.
-
-### Phase 3+ — Advanced Features
-
-**7. Cross-Chain NFT Bridging**
-NFTs can be bridged between PulseChain and BASE using a lock-and-mint mechanism:
-- Lock NFT on source chain → Mint mirror on destination chain
-- Bridge back → Burn mirror → Unlock original
-- Only one instance exists at any time (no duplication)
-- Metadata and rank travel with the NFT
-- Fee discount applies on whichever chain the NFT currently resides
-
-**8. Community Marketplace**
+**6. Community Marketplace**
 A peer-to-peer trading marketplace on herobase.io for HERO NFT holders to buy, sell, and trade cards directly within the ecosystem.
 
-**9. Custom Animated NFT**
-Legendary card holders receive a custom animated NFT featuring their specific military branch or unit — a one-of-a-kind animated collectible created exclusively for them.
-
-### Utility Tiers Summary
-
-| Tier | Requirement | Unlocks |
-|------|------------|---------|
-| **Core** | Any NFT | Fee reduction, Diamond Hands rewards |
-| **Enhanced** | Rare+ card rarity | Enhanced features, priority access |
-| **Premium** | Legendary card rarity | Custom animated NFT, all utilities |
+**7. Custom Animated NFT**
+Legendary-trait card holders receive a custom animated NFT featuring their specific military branch or unit — a one-of-a-kind animated collectible created exclusively for them.
 
 ---
 
 ## 10. Rank System
 
-The Rank System is the backbone of NFT utility. It is entirely separate from Card Rarity (Section 8.4). Card rarity determines how the card looks. Rank determines what the card does.
+The Rank System provides a visual and community hierarchy for NFT holders based on their HERO token holdings. Rank is displayed on herobase.io and determines governance weight and future staking boosts.
 
-Rank is **dynamic** — it automatically upgrades or downgrades based on the wallet's current HERO token balance. This is calculated in real-time by the smart contract.
+**Important:** The NFT fee discount is a flat 2% for ALL holders (see Section 9). The Rank System is separate — it governs governance multipliers, community status, and planned staking boosts, not the fee discount.
 
-| Rank | Military Grade | HERO Required | Fee Reduction | Governance | Staking Boost | Rarity Tier % |
-|------|---------------|--------------|---------------|------------|---------------|---------------|
-| Private | E-1 | 1,000+ | 1% | 1x | +5% APY | 40% |
-| Corporal | E-4 | 10,000+ | 2% | 1.5x | +10% APY | 25% |
-| Sergeant | E-5 | 50,000+ | 3% | 2x | +15% APY | 18% |
-| Lieutenant | O-2 | 250,000+ | 4% | 3x | +25% APY | 10% |
-| Colonel | O-6 | 1,000,000+ | 5% | 4x | +40% APY | 5% |
-| General | O-10 | 5,000,000+ | 7% (zero-fee) | 5x | +60% APY | 2% |
+Rank is **dynamic** — it automatically upgrades or downgrades based on the wallet's current HERO token balance. This is calculated in real-time.
 
-**Important:** You need BOTH an NFT AND the required HERO balance to achieve a rank. The NFT is the key; the HERO balance determines which door it opens.
+| Rank | Military Grade | HERO Required | Governance Multiplier | Planned Staking Boost |
+|------|---------------|--------------|----------------------|----------------------|
+| Private | E-1 | 1,000+ | 1x (base) | +5% APY |
+| Corporal | E-4 | 10,000+ | 1.5x | +10% APY |
+| Sergeant | E-5 | 50,000+ | 2x | +15% APY |
+| Lieutenant | O-2 | 250,000+ | 3x | +25% APY |
+| Colonel | O-6 | 1,000,000+ | 4x | +40% APY |
+| General | O-10 | 5,000,000+ | 5x | +60% APY |
+
+**How it works:** You need BOTH an NFT AND the required HERO balance to achieve a rank. The NFT is the key; the HERO balance determines which door it opens. A General-ranked holder with 5,000,000 HERO has 25,000,000 effective voting power (5x multiplier).
 
 ---
 
@@ -407,7 +383,7 @@ When a winner is declared (whether by vote or RNG fallback), an automated notifi
 
 ### 11.4 Governance Power
 
-Voting power is determined by HERO token balance multiplied by the NFT governance multiplier (see Section 10). A General-ranked holder with 5,000,000 HERO has 25,000,000 effective voting power (5x multiplier).
+Voting power is determined by HERO token balance. NFT holders are eligible to participate in DAO votes. The Rank System (Section 10) provides governance multipliers for holders who meet the HERO balance thresholds, with a General-ranked holder (5,000,000+ HERO) receiving 5x effective voting power.
 
 ---
 
@@ -460,7 +436,7 @@ herobase.io serves as the central hub for the HERO ecosystem. The following tool
 
 | Tool | Description | Status |
 |------|-------------|--------|
-| **NFT Gallery** | Browse all 555 cards with rarity filters | LIVE |
+| **NFT Gallery** | Browse all 2,000 cards with rarity filters | LIVE |
 | **NFT Mint Page** | Mint with live trait preview and reveal animation | LIVE |
 | **Rank System** | View your current rank and required HERO for next tier | LIVE |
 | **Community Marketplace** | P2P NFT trading (Phase 3) | PLANNED |
@@ -503,21 +479,24 @@ HERO operates identically on PulseChain and BASE with deterministic contract dep
 |---------|-----------|------|
 | Token Address | 0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8 | 0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8 |
 | Buy & Burn Address | 0x67bEF0A8Be3ef576bF4ab2D904FCbe82E9846670 | 0x67bEF0A8Be3ef576bF4ab2D904FCbe82E9846670 |
+| NFT Collection | 1,000 NFTs (independent) | 1,000 NFTs (independent) |
+| NFT Mint Price | 100,000 PLS | 0.001 ETH |
+| NFT Fee Discount | 2% on PulseChain $HERO only | 2% on BASE $HERO only |
 | Native Coin | PLS | ETH |
 | Primary DEX | PulseX | Uniswap v2 |
 | Stablecoin | DAI | USDC |
 | NFT RNG | Commit-Reveal (2-tx) | Chainlink VRF v2.5 |
 | Block Time | ~10s | ~2s |
 
-### 15.1 NFT Cross-Chain Bridging (Phase 3)
+### 15.1 Independent NFT Collections
 
-A lock-and-mint bridge will enable NFTs to move between PulseChain and BASE:
+Each chain has its own independent 1,000-NFT collection. There is no cross-chain bridge dependency for NFTs. This design was chosen to eliminate bridge risk, oracle trust assumptions, and additional gas costs.
 
-1. Lock NFT on source chain
-2. Mint mirror NFT on destination chain
-3. Bridge back: burn mirror, unlock original
-4. Only one instance exists at any time
-5. Metadata, rank, and utility travel with the NFT
+- BASE NFT holders receive 2% fee discount on BASE $HERO transfers only
+- PulseChain NFT holders receive 2% fee discount on PulseChain $HERO transfers only
+- No cross-chain discount — each collection is self-contained
+- Identical Solidity contract code deployed on both chains
+- Independent RNG: Chainlink VRF v2.5 (BASE) / Commit-Reveal (PulseChain)
 
 ---
 
@@ -525,9 +504,9 @@ A lock-and-mint bridge will enable NFTs to move between PulseChain and BASE:
 
 ### 16.1 Design Principles
 
-- **Immutability** — NFT contracts have no admin functions, no pause, no proxy, no upgrade
-- **Transparency** — All fee allocations, burns, and donations are tracked on-chain with events
-- **Defensive Patterns** — ReentrancyGuard on all state-changing functions
+- **Immutability** — NFT contracts (v2.0) have no admin functions, no pause, no proxy, no upgrade. MAX_SUPPLY = 1,000 per chain is hardcoded.
+- **Transparency** — All fee allocations, burns, donations, and NFT transfers are tracked on-chain with events
+- **Defensive Patterns** — ReentrancyGuard on all state-changing functions, flash loan protection via 1-block hold minimum
 - **Flash Loan Protection** — 1-block hold minimum for NFT fee discount
 - **Deterministic Deployment** — Same contract addresses on both chains
 
@@ -568,43 +547,41 @@ The ecosystem relies on external systems including DEX routers, Chainlink oracle
 - Community Hub
 
 ### Phase 3: NFT Collection (IN PROGRESS)
-- 555 unique steampunk-military trading cards — artwork complete
+- 2,000 unique steampunk-military trading cards (1,000 per chain) — 6 trait categories, 58 layer files
 - 4 animated video NFTs complete
-- ERC-721 smart contract blueprint finalized
-- Dual-chain deployment architecture (PulseChain + BASE)
+- ERC-721 smart contract v2.0 finalized (immutable, ERC-2981 royalties, flash loan protection)
+- Independent dual-chain deployment architecture (no bridge dependency)
 - Artist integration pipeline built (compositor, metadata, IPFS)
-- Immutable ownership specification locked
-- Mint event: 85% treasury (charity), 15% operations
-- **NEXT:** Artist delivers final layer artwork → Generate collection → Deploy to testnets
+- Immutable Ownership Specification v2.0 locked
+- Flat 2% fee discount utility — on-chain enforced via `balanceOf`
+- Mint prices: 0.001 ETH (BASE) / 100,000 PLS (PulseChain)
+- Mint revenue: 85% treasury (charity), 15% operations
+- Max 5 NFTs per wallet per chain
+- **NEXT:** Artist delivers final layer artwork → Generate 1,000 composites per chain → IPFS upload → Deploy to testnets
 
-### Phase 4: NFT Utility Activation (PLANNED — Q2-Q3 2026)
-- Tiered fee reduction (1–7% based on rank) — smart contract integration
-- Diamond Hands time-weighted staking multiplier
-- Governance voting power boost (1x–5x)
-- Exclusive airdrop eligibility for holders
-- Rank System live on herobase.io
-
-### Phase 5: Advanced NFT Features (PLANNED — Q3-Q4 2026)
-- Rank promotion system (dynamic rank based on HERO holdings)
-- Staking APY boost by rank (+5% to +60%)
-- Cross-chain NFT bridging (PulseChain ↔ BASE)
-- Community marketplace for P2P trading
-- Custom animated NFT for Legendary holders
-
-### Phase 6: DAO & RNG Integration (PLANNED — Q4 2026)
+### Phase 4: NFT Utility & DAO Activation (PLANNED — Q2-Q3 2026)
+- Flat 2% fee discount live on both chains
 - DAO governance with quarterly charity proposals
 - RNG FLOW integration for provably fair voting fallback
-- Community giveaways and raffles
-- Holder rewards (weighted random airdrops)
-- Daily Spin-the-Wheel engagement feature
-- RNG feed publication on-chain
+- Community giveaways and raffles (provably fair)
+- Holder rewards (weighted random airdrops via snapshot)
+- Daily Spin-the-Wheel engagement feature for NFT holders
+- Rank System live on herobase.io (governance multipliers)
 
-### Phase 7: Ecosystem Growth (ONGOING)
+### Phase 5: Advanced Features (PLANNED — Q3-Q4 2026)
+- Rank-based staking APY boost (+5% to +60%)
+- Community marketplace for P2P NFT trading
+- Custom animated NFT for Legendary-trait holders
+- Bug bounty program for responsible disclosure
+- Multisig governance with timelock for parameter updates
+
+### Phase 6: Ecosystem Growth (ONGOING)
 - 5 monitoring bots (RNG, Governance, Security, Price Oracle, Liquidity)
 - AI-powered analytics and insights
 - Partner integrations and cross-ecosystem collaborations
 - Continuous platform improvements based on community feedback
 - GitHub knowledge base and documentation maintenance
+- RNG feed publication on-chain
 
 ---
 
@@ -636,7 +613,7 @@ Note: Token and Buy & Burn contracts share the same addresses on both chains via
 - **No guarantees** — Token prices are volatile. Only risk what you can afford to lose.
 - **On-chain transparency** — All accounting and events are public. Verify on block explorers.
 - **Parameter updates** — Certain fee allocation parameters can be updated by the owner to respond to market conditions. All changes emit on-chain events and are publicly visible.
-- **Third-party dependencies** — DEXs, oracles (Chainlink VRF), and bridges are external systems. Issues in these systems can propagate to HERO operations.
+- **Third-party dependencies** — DEXs and oracles (Chainlink VRF) are external systems. Issues in these systems can propagate to HERO operations.
 - **NFT immutability** — Once minted, NFTs cannot be recovered if keys are lost. There is no admin recovery function by design. **Users are solely responsible for securing their private keys.**
 - **Smart contract risk** — Despite audits, all smart contracts carry inherent risk. DYOR.
 
@@ -645,7 +622,7 @@ Note: Token and Buy & Burn contracts share the same addresses on both chains via
 - **Flash loan protection** — NFTs must be held for a minimum of 1 block before fee discounts activate. This is enforced via on-chain block-number tracking in the NFT contract.
 - **Buy & Burn front-running** — The buy-and-burn engine uses slippage protection and minimum output checks to mitigate sandwich attacks.
 - **Commit-reveal RNG (PulseChain)** — Reveal transactions must be submitted within a defined window. Expired commits are voided and the user must re-commit. Miner censorship risk is mitigated by the window duration.
-- **Bridge security** — Cross-chain NFT bridging uses a lock-and-mint mechanism. Bridge contracts will undergo independent security audits before mainnet activation (Phase 5).
+- **Independent collections** — Each chain operates its own NFT collection with no cross-chain dependency. A BASE NFT provides utility on BASE only; a PulseChain NFT provides utility on PulseChain only.
 - **Bug bounty** — A community bug bounty program will be established in Phase 5 to incentivize responsible disclosure.
 
 ### 19.3 Regulatory & Legal Disclaimers
