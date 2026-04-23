@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who's Holding HERO? — Holder Distribution</title>
+  <meta name="description" content="HERO token holder distribution with military rank tiers. See who's holding and their rank in the HERO army.">
+  <link rel="icon" type="image/jpeg" href="https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/XieYK2a8rpN3wLQcLrDc5d/HerologowithSoldier_092f3ebf.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111111;
+      --bg-card: #161616;
+      --bg-card-hover: #1a1a1a;
+      --border: #222222;
+      --border-accent: #333333;
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --gold: #F59E0B;
+      --gold-dim: #92610a;
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.1);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.1);
+      --blue: #3b82f6;
+      --pulse-green: #00ff88;
+      --base-blue: #0052FF;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    .top-bar {
+      background: linear-gradient(180deg, #0f0f0f 0%, #0a0a0a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .top-bar .logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none; color: var(--text-primary);
+    }
+    .top-bar .logo img { width: 32px; height: 32px; border-radius: 50%; }
+    .top-bar .logo span { font-weight: 700; font-size: 16px; }
+    .top-bar nav { display: flex; gap: 8px; }
+    .top-bar nav a {
+      color: var(--text-secondary); text-decoration: none; font-size: 13px;
+      font-weight: 500; padding: 6px 14px; border-radius: 8px; transition: all 0.2s;
+    }
+    .top-bar nav a:hover, .top-bar nav a.active {
+      color: var(--gold); background: rgba(245, 158, 11, 0.08);
+    }
+    .back-btn {
+      color: var(--text-secondary); text-decoration: none; font-size: 13px;
+      display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+      border-radius: 8px; border: 1px solid var(--border); transition: all 0.2s;
+    }
+    .back-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .page-container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 {
+      font-size: 28px; font-weight: 800; letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--gold) 0%, #fbbf24 50%, var(--gold) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .page-header p { color: var(--text-secondary); font-size: 14px; }
+
+    /* ─── Token Selector ─── */
+    .token-selector {
+      display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .token-btn {
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary);
+      padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .token-btn:hover { border-color: var(--gold-dim); color: var(--text-primary); }
+    .token-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(245, 158, 11, 0.05); }
+    .token-btn .chain-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+    }
+    .token-btn .chain-dot.pls { background: var(--pulse-green); }
+    .token-btn .chain-dot.base { background: var(--base-blue); }
+
+    /* ─── Supply Stats ─── */
+    .supply-stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .supply-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+    }
+    .supply-card .label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); margin-bottom: 6px;
+    }
+    .supply-card .value {
+      font-size: 20px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .supply-card .sub {
+      font-size: 12px; color: var(--text-muted); margin-top: 4px;
+    }
+
+    /* ─── Rank Legend ─── */
+    .rank-legend {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; margin-bottom: 24px;
+    }
+    .rank-legend h3 {
+      font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 16px;
+    }
+    .rank-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .rank-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      font-size: 13px;
+    }
+    .rank-item .emoji { font-size: 18px; min-width: 28px; text-align: center; }
+    .rank-item .name { font-weight: 600; }
+    .rank-item .req { color: var(--text-muted); font-size: 11px; }
+
+    /* ─── Main Layout ─── */
+    .main-layout {
+      display: grid; grid-template-columns: 1fr 380px; gap: 20px;
+    }
+    @media (max-width: 1000px) { .main-layout { grid-template-columns: 1fr; } }
+
+    /* ─── Holders Table ─── */
+    .holders-panel {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .holders-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .holders-header h2 { font-size: 16px; font-weight: 600; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; padding: 12px 16px; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--text-muted); font-weight: 600;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px; border-bottom: 1px solid rgba(34, 34, 34, 0.5);
+      font-size: 14px;
+    }
+    tr:hover td { background: var(--bg-card-hover); }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    .holder-rank-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 10px; border-radius: 6px;
+      font-size: 12px; font-weight: 600;
+    }
+    .holder-rank-badge.general { background: rgba(245, 158, 11, 0.15); color: var(--gold); }
+    .holder-rank-badge.colonel { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+    .holder-rank-badge.major { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .holder-rank-badge.captain { background: rgba(34, 197, 94, 0.15); color: var(--green); }
+    .holder-rank-badge.lieutenant { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+    .holder-rank-badge.sergeant { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
+    .holder-rank-badge.corporal { background: rgba(156, 163, 175, 0.1); color: #9ca3af; }
+    .holder-rank-badge.private { background: rgba(107, 114, 128, 0.1); color: #6b7280; }
+
+    .address-link {
+      color: var(--text-secondary); text-decoration: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    }
+    .address-link:hover { color: var(--gold); }
+    .address-label {
+      font-size: 11px; color: var(--gold); font-weight: 600;
+      display: block; margin-top: 2px;
+    }
+
+    /* ─── Distribution Chart ─── */
+    .dist-panel { display: flex; flex-direction: column; gap: 16px; }
+    .dist-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px;
+    }
+    .dist-card h3 {
+      font-size: 14px; font-weight: 600; color: var(--gold); margin-bottom: 16px;
+    }
+
+    .dist-bar-container { display: flex; flex-direction: column; gap: 10px; }
+    .dist-bar-row {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .dist-bar-label {
+      font-size: 12px; color: var(--text-secondary); min-width: 80px;
+      white-space: nowrap;
+    }
+    .dist-bar-track {
+      flex: 1; height: 20px; background: var(--border);
+      border-radius: 4px; overflow: hidden; position: relative;
+    }
+    .dist-bar-fill {
+      height: 100%; border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    .dist-bar-pct {
+      font-size: 12px; font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      min-width: 50px; text-align: right;
+    }
+
+    /* ─── Donut Chart ─── */
+    .donut-container {
+      display: flex; justify-content: center; padding: 20px 0;
+    }
+
+    .page-footer {
+      text-align: center; padding: 40px 24px; color: var(--text-muted);
+      font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px;
+    }
+    .page-footer a { color: var(--gold); text-decoration: none; }
+
+    .loading-row {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite;
+      height: 48px; margin: 4px 0;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 768px) {
+      .top-bar nav { display: none; }
+      .rank-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="/" class="logo">
+      <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/XieYK2a8rpN3wLQcLrDc5d/HerologowithSoldier_092f3ebf.jpg" alt="HERO">
+      <span>HERO Dapp</span>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/swap">Swap</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/live-feed">Live Feed</a>
+      <a href="/rankings">Rankings</a>
+      <a href="/holders" class="active">Holders</a>
+    </nav>
+    <a href="/" class="back-btn">← Back to App</a>
+  </div>
+
+  <div class="page-container">
+    <div class="page-header">
+      <h1>Who's Holding HERO?</h1>
+      <p>Top holders with military rank tiers. The bigger the bag, the higher the rank. Transparency builds trust.</p>
+    </div>
+
+    <!-- Token Selector -->
+    <div class="token-selector">
+      <button class="token-btn active" data-token="hero" data-chain="pulsechain">
+        <span class="chain-dot pls"></span> HERO (PulseChain)
+      </button>
+      <button class="token-btn" data-token="hero" data-chain="base">
+        <span class="chain-dot base"></span> HERO (BASE)
+      </button>
+      <button class="token-btn" data-token="vets" data-chain="pulsechain">
+        <span class="chain-dot pls"></span> VETS (PulseChain)
+      </button>
+    </div>
+
+    <!-- Supply Stats -->
+    <div class="supply-stats" id="supplyStats">
+      <div class="supply-card">
+        <div class="label">Total Supply</div>
+        <div class="value" id="totalSupply">Loading...</div>
+      </div>
+      <div class="supply-card">
+        <div class="label">Burned Supply</div>
+        <div class="value" id="burnedSupply">Loading...</div>
+        <div class="sub" id="burnPct">—</div>
+      </div>
+      <div class="supply-card">
+        <div class="label">Circulating Supply</div>
+        <div class="value" id="circSupply">Loading...</div>
+      </div>
+      <div class="supply-card">
+        <div class="label">Current Price</div>
+        <div class="value" id="currentPrice">Loading...</div>
+        <div class="sub" id="priceChange">—</div>
+      </div>
+    </div>
+
+    <!-- Rank Legend -->
+    <div class="rank-legend">
+      <h3>Military Rank Tiers</h3>
+      <div class="rank-grid">
+        <div class="rank-item"><span class="emoji">⭐⭐⭐⭐⭐</span><div><div class="name">5-Star General</div><div class="req">≥ 5% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">⭐⭐⭐⭐</span><div><div class="name">General</div><div class="req">≥ 2% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">🦅</span><div><div class="name">Colonel</div><div class="req">≥ 1% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">🎖️</span><div><div class="name">Major</div><div class="req">≥ 0.5% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">🏅</span><div><div class="name">Captain</div><div class="req">≥ 0.25% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">📌</span><div><div class="name">Lieutenant</div><div class="req">≥ 0.1% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">💪</span><div><div class="name">Sergeant</div><div class="req">≥ 0.05% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">🪖</span><div><div class="name">Corporal</div><div class="req">≥ 0.01% of supply</div></div></div>
+        <div class="rank-item"><span class="emoji">🎯</span><div><div class="name">Private</div><div class="req">< 0.01% of supply</div></div></div>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- Holders Table -->
+      <div class="holders-panel">
+        <div class="holders-header">
+          <h2 id="holdersTitle">Top HERO Holders (PulseChain)</h2>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Address</th>
+              <th>Rank</th>
+              <th>Balance</th>
+              <th>% of Supply</th>
+            </tr>
+          </thead>
+          <tbody id="holdersBody">
+            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Loading holder data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Distribution Panel -->
+      <div class="dist-panel">
+        <div class="dist-card">
+          <h3>Supply Distribution</h3>
+          <div class="donut-container">
+            <canvas id="donutChart" width="240" height="240"></canvas>
+          </div>
+          <div id="donutLegend" style="margin-top:12px"></div>
+        </div>
+
+        <div class="dist-card">
+          <h3>Holder Breakdown</h3>
+          <div class="dist-bar-container" id="distBars">
+            <div style="text-align:center;padding:20px;color:var(--text-muted)">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <p>HERO Dapp — Built for Veterans, by Veterans | <a href="https://www.vicfoundation.com">VIC Foundation</a> 501(c)(3)</p>
+    <p style="margin-top:4px">Holder data queried directly from on-chain RPCs. Updates every 5 minutes.</p>
+  </div>
+
+  <script>
+    const PULSECHAIN_RPC = 'https://rpc-pulsechain.g4mm4.io';
+    const BASE_RPC = 'https://mainnet.base.org';
+    const DEXSCREENER = 'https://api.dexscreener.com';
+
+    const TOKEN_CONFIG = {
+      hero_pulsechain: {
+        address: '0x35a51Dfc82032682E4Bda8AAcA87B9Bc386C3D27',
+        rpc: PULSECHAIN_RPC,
+        totalSupply: 100_000_000,
+        decimals: 18,
+        explorer: 'https://scan.pulsechain.com',
+        pair: '0x34948e125033a697332202964de96af85becd78f',
+        chain: 'pulsechain',
+      },
+      hero_base: {
+        address: '0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8',
+        rpc: BASE_RPC,
+        totalSupply: 100_000_000,
+        decimals: 18,
+        explorer: 'https://basescan.org',
+        pair: '0x3bb159de8604ab7e0148edc24f2a568c430476cf',
+        chain: 'base',
+      },
+      vets_pulsechain: {
+        address: '0x4013abBf94A745EfA7cc848989Ee83424a770060',
+        rpc: PULSECHAIN_RPC,
+        totalSupply: 100_000_000_000,
+        decimals: 18,
+        explorer: 'https://scan.pulsechain.com',
+        pair: '0xe2ec4e2033054b778a2a56b7b3eb70f89944f5e6',
+        chain: 'pulsechain',
+      },
+    };
+
+    // Known addresses with labels
+    const KNOWN_ADDRESSES = {
+      '0x000000000000000000000000000000000000dead': { label: '🔥 Burn Address', type: 'burn' },
+      '0x0000000000000000000000000000000000000000': { label: '🕳️ Zero Address', type: 'burn' },
+      '0x9016a0daa30bd29a51a1a2905352877947f904e9': { label: '🔥 Buy & Burn Contract', type: 'contract' },
+      '0xc9798c7447b209e79f12542691d4cda64b98bd96': { label: '🌾 MasterChef V2', type: 'contract' },
+      '0x34948e125033a697332202964de96af85becd78f': { label: '💧 HERO/PLS LP', type: 'lp' },
+      '0xe2ec4e2033054b778a2a56b7b3eb70f89944f5e6': { label: '💧 VETS/WPLS LP', type: 'lp' },
+      '0x1f7fa931f4d1789c44f4a7adc4564de45ed96df5': { label: '💧 HERO/TruFarm LP', type: 'lp' },
+      '0x3bb159de8604ab7e0148edc24f2a568c430476cf': { label: '💧 HERO/ETH LP (BASE)', type: 'lp' },
+      '0x1e8b3a00e6fd7a79f8e1a7f5edb1ba652b288c55': { label: '🤖 HABFF Arb Bot', type: 'contract' },
+      '0xfb2e7c8c3a7f8e9a1b2c3d4e5f6a7b8c9d0e1f2a': { label: '🏦 Treasury', type: 'treasury' },
+    };
+
+    // Additional whale addresses to check (common large holders)
+    const WHALE_ADDRESSES = [
+      '0x000000000000000000000000000000000000dead',
+      '0x0000000000000000000000000000000000000000',
+      '0x9016a0daa30bd29a51a1a2905352877947f904e9',
+      '0xc9798c7447b209e79f12542691d4cda64b98bd96',
+      '0x34948e125033a697332202964de96af85becd78f',
+      '0xe2ec4e2033054b778a2a56b7b3eb70f89944f5e6',
+      '0x1f7fa931f4d1789c44f4a7adc4564de45ed96df5',
+      '0x3bb159de8604ab7e0148edc24f2a568c430476cf',
+      '0x1e8b3a00e6fd7a79f8e1a7f5edb1ba652b288c55',
+    ];
+
+    let currentToken = 'hero';
+    let currentChain = 'pulsechain';
+
+    function getMilitaryRank(pct) {
+      if (pct >= 5) return { rank: '5-Star General', emoji: '⭐⭐⭐⭐⭐', class: 'general' };
+      if (pct >= 2) return { rank: 'General', emoji: '⭐⭐⭐⭐', class: 'general' };
+      if (pct >= 1) return { rank: 'Colonel', emoji: '🦅', class: 'colonel' };
+      if (pct >= 0.5) return { rank: 'Major', emoji: '🎖️', class: 'major' };
+      if (pct >= 0.25) return { rank: 'Captain', emoji: '🏅', class: 'captain' };
+      if (pct >= 0.1) return { rank: 'Lieutenant', emoji: '📌', class: 'lieutenant' };
+      if (pct >= 0.05) return { rank: 'Sergeant', emoji: '💪', class: 'sergeant' };
+      if (pct >= 0.01) return { rank: 'Corporal', emoji: '🪖', class: 'corporal' };
+      return { rank: 'Private', emoji: '🎯', class: 'private' };
+    }
+
+    async function fetchHolderData() {
+      const configKey = `${currentToken}_${currentChain}`;
+      const config = TOKEN_CONFIG[configKey];
+      if (!config) return;
+
+      // Update title
+      const tokenName = currentToken === 'hero' ? 'HERO' : 'VETS';
+      const chainName = currentChain === 'base' ? 'BASE' : 'PulseChain';
+      document.getElementById('holdersTitle').textContent = `Top ${tokenName} Holders (${chainName})`;
+
+      // Fetch from server-side API proxy (avoids CORS issues with RPCs)
+      let apiData;
+      try {
+        const res = await fetch(`/api/holders/${currentToken}/${currentChain}`);
+        apiData = await res.json();
+      } catch (e) {
+        console.error('Failed to fetch holder data:', e);
+        document.getElementById('holdersBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--red)">Failed to load holder data. Try refreshing.</td></tr>';
+        return;
+      }
+
+      const holders = (apiData.holders || []).map(h => {
+        const pct = h.percentage;
+        const { rank, emoji, class: rankClass } = getMilitaryRank(pct);
+        const known = KNOWN_ADDRESSES[h.address.toLowerCase()];
+        return {
+          ...h,
+          militaryRank: rank,
+          rankEmoji: emoji,
+          rankClass,
+          label: known?.label || h.label,
+          type: known?.type || h.type,
+        };
+      });
+
+      // Calculate supply stats
+      const burnAddrs = ['0x000000000000000000000000000000000000dead', '0x0000000000000000000000000000000000000000'];
+      const burned = holders.filter(h => burnAddrs.includes(h.address.toLowerCase())).reduce((s, h) => s + h.balance, 0);
+      const circulating = config.totalSupply - burned;
+
+      document.getElementById('totalSupply').textContent = formatLargeNum(config.totalSupply);
+      document.getElementById('burnedSupply').textContent = formatLargeNum(burned);
+      document.getElementById('burnPct').textContent = `${((burned / config.totalSupply) * 100).toFixed(2)}% burned`;
+      document.getElementById('circSupply').textContent = formatLargeNum(circulating);
+
+      // Fetch price
+      try {
+        const pairRes = await fetch(`${DEXSCREENER}/latest/dex/pairs/${config.chain}/${config.pair}`);
+        const pairData = await pairRes.json();
+        const pair = pairData.pair || pairData.pairs?.[0];
+        if (pair) {
+          const price = parseFloat(pair.priceUsd || 0);
+          document.getElementById('currentPrice').textContent = '$' + (price < 0.0001 ? price.toFixed(10) : price.toFixed(6));
+          const change = pair.priceChange?.h24 || 0;
+          const el = document.getElementById('priceChange');
+          el.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '% (24h)';
+          el.style.color = change >= 0 ? 'var(--green)' : 'var(--red)';
+        }
+      } catch {}
+
+      // Filter out burn addresses for display
+      const displayHolders = holders.filter(h => !burnAddrs.includes(h.address.toLowerCase()));
+
+      renderHoldersTable(displayHolders, config);
+      renderDistribution(displayHolders, burned, config);
+      drawDonut(displayHolders, burned, config);
+    }
+
+    function renderHoldersTable(holders, config) {
+      const tbody = document.getElementById('holdersBody');
+      if (holders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">No holder data found for known addresses</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = holders.map((h, i) => `
+        <tr>
+          <td style="color:var(--text-muted);font-weight:600">${i + 1}</td>
+          <td>
+            <a class="address-link" href="${config.explorer}/address/${h.address}" target="_blank">
+              ${h.address.slice(0, 8)}...${h.address.slice(-6)}
+            </a>
+            ${h.label ? `<span class="address-label">${h.label}</span>` : ''}
+          </td>
+          <td>
+            <span class="holder-rank-badge ${h.rankClass}">
+              ${h.rankEmoji} ${h.militaryRank}
+            </span>
+          </td>
+          <td class="mono">${formatLargeNum(h.balance)}</td>
+          <td class="mono" style="color:var(--gold)">${h.percentage.toFixed(4)}%</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderDistribution(holders, burned, config) {
+      const container = document.getElementById('distBars');
+      const categories = [
+        { label: 'Burned', value: burned, color: '#ef4444' },
+        { label: 'LP Pools', value: holders.filter(h => h.type === 'lp').reduce((s, h) => s + h.balance, 0), color: '#3b82f6' },
+        { label: 'Contracts', value: holders.filter(h => h.type === 'contract').reduce((s, h) => s + h.balance, 0), color: '#a855f7' },
+        { label: 'Other Known', value: holders.filter(h => !['lp', 'contract', 'burn'].includes(h.type)).reduce((s, h) => s + h.balance, 0), color: '#22c55e' },
+      ];
+
+      const maxPct = Math.max(...categories.map(c => (c.value / config.totalSupply) * 100), 1);
+
+      container.innerHTML = categories.filter(c => c.value > 0).map(c => {
+        const pct = (c.value / config.totalSupply) * 100;
+        return `
+          <div class="dist-bar-row">
+            <div class="dist-bar-label">${c.label}</div>
+            <div class="dist-bar-track">
+              <div class="dist-bar-fill" style="width:${(pct / maxPct) * 100}%;background:${c.color}"></div>
+            </div>
+            <div class="dist-bar-pct" style="color:${c.color}">${pct.toFixed(2)}%</div>
+          </div>`;
+      }).join('');
+    }
+
+    function drawDonut(holders, burned, config) {
+      const canvas = document.getElementById('donutChart');
+      const ctx = canvas.getContext('2d');
+      const size = 240;
+      canvas.width = size * 2;
+      canvas.height = size * 2;
+      ctx.scale(2, 2);
+
+      const cx = size / 2;
+      const cy = size / 2;
+      const outerR = 100;
+      const innerR = 60;
+
+      const segments = [
+        { label: 'Burned', value: burned, color: '#ef4444' },
+        { label: 'LP Pools', value: holders.filter(h => h.type === 'lp').reduce((s, h) => s + h.balance, 0), color: '#3b82f6' },
+        { label: 'Contracts', value: holders.filter(h => h.type === 'contract').reduce((s, h) => s + h.balance, 0), color: '#a855f7' },
+        { label: 'Other', value: holders.filter(h => !['lp', 'contract'].includes(h.type)).reduce((s, h) => s + h.balance, 0), color: '#22c55e' },
+      ].filter(s => s.value > 0);
+
+      const total = segments.reduce((s, seg) => s + seg.value, 0);
+      const remaining = config.totalSupply - total;
+      if (remaining > 0) segments.push({ label: 'Distributed', value: remaining, color: '#333' });
+
+      let startAngle = -Math.PI / 2;
+      const grandTotal = config.totalSupply;
+
+      segments.forEach(seg => {
+        const sliceAngle = (seg.value / grandTotal) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.arc(cx, cy, outerR, startAngle, startAngle + sliceAngle);
+        ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = seg.color;
+        ctx.fill();
+        startAngle += sliceAngle;
+      });
+
+      // Center text
+      ctx.fillStyle = '#f5f5f5';
+      ctx.font = '600 14px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText('Total Supply', cx, cy - 6);
+      ctx.font = '700 16px JetBrains Mono';
+      ctx.fillText(formatLargeNum(config.totalSupply), cx, cy + 14);
+
+      // Legend
+      const legend = document.getElementById('donutLegend');
+      legend.innerHTML = segments.map(s => `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px">
+          <div style="width:10px;height:10px;border-radius:2px;background:${s.color}"></div>
+          <span style="color:var(--text-secondary)">${s.label}</span>
+          <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;color:var(--text-primary)">${((s.value / grandTotal) * 100).toFixed(2)}%</span>
+        </div>
+      `).join('');
+    }
+
+    function formatLargeNum(n) {
+      if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+      if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(2) + 'K';
+      return n.toFixed(2);
+    }
+
+    // Token selector
+    document.querySelectorAll('.token-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.token-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentToken = btn.dataset.token;
+        currentChain = btn.dataset.chain;
+        document.getElementById('holdersBody').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Loading holder data...</td></tr>';
+        fetchHolderData();
+      });
+    });
+
+    // Initialize
+    fetchHolderData();
+    setInterval(fetchHolderData, 300000); // Refresh every 5 minutes
+  </script>
+</body>
+</html>

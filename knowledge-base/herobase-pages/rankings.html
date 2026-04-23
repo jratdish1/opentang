@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Rankings — HERO Ecosystem</title>
+  <meta name="description" content="HERO ecosystem token rankings with real-time prices, volume, liquidity, and market cap data.">
+  <link rel="icon" type="image/jpeg" href="https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/XieYK2a8rpN3wLQcLrDc5d/HerologowithSoldier_092f3ebf.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111111;
+      --bg-card: #161616;
+      --bg-card-hover: #1a1a1a;
+      --border: #222222;
+      --border-accent: #333333;
+      --text-primary: #f5f5f5;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --gold: #F59E0B;
+      --gold-dim: #92610a;
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.1);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.1);
+      --blue: #3b82f6;
+      --pulse-green: #00ff88;
+      --base-blue: #0052FF;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+    .top-bar {
+      background: linear-gradient(180deg, #0f0f0f 0%, #0a0a0a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+    .top-bar .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+    .top-bar .logo img { width: 32px; height: 32px; border-radius: 50%; }
+    .top-bar .logo span { font-weight: 700; font-size: 16px; letter-spacing: -0.02em; }
+    .top-bar nav { display: flex; gap: 8px; }
+    .top-bar nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .top-bar nav a:hover, .top-bar nav a.active {
+      color: var(--gold);
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .back-btn {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .back-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .page-container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--gold) 0%, #fbbf24 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .page-header p { color: var(--text-secondary); font-size: 14px; }
+
+    /* ─── Token Cards Grid ─── */
+    .token-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .token-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.2s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .token-card:hover {
+      border-color: var(--gold-dim);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(245, 158, 11, 0.06);
+    }
+    .token-card .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .token-card .token-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .token-card .token-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .token-card .token-icon.hero { background: linear-gradient(135deg, #F59E0B, #D97706); color: #000; }
+    .token-card .token-icon.vets { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
+    .token-card .token-icon.emit { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
+    .token-card .token-icon.rhino { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: #fff; }
+    .token-card .token-icon.trufarm { background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; }
+    .token-card .symbol { font-size: 18px; font-weight: 700; }
+    .token-card .chain-tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .chain-tag.pulsechain { background: rgba(0, 255, 136, 0.1); color: var(--pulse-green); }
+    .chain-tag.base { background: rgba(0, 82, 255, 0.1); color: var(--base-blue); }
+
+    .token-card .price-section {
+      margin-bottom: 16px;
+    }
+    .token-card .price {
+      font-size: 26px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.02em;
+    }
+    .token-card .change-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .change-pill {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .change-pill.up { background: var(--green-bg); color: var(--green); }
+    .change-pill.down { background: var(--red-bg); color: var(--red); }
+    .change-pill .label {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-right: 4px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ─── Sparkline Canvas ─── */
+    .sparkline-container {
+      height: 60px;
+      margin: 12px 0;
+      position: relative;
+    }
+    .sparkline-container canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─── Stats Row ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .stat-item .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .stat-item .value {
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ─── Txn Bar ─── */
+    .txn-bar {
+      display: flex;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 12px;
+      background: var(--border);
+    }
+    .txn-bar .buys { background: var(--green); }
+    .txn-bar .sells { background: var(--red); }
+    .txn-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ─── Rankings Table ─── */
+    .rankings-table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .rankings-table-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .rankings-table-header h2 { font-size: 16px; font-weight: 600; }
+    .refresh-badge {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .refresh-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(34, 34, 34, 0.5);
+      font-size: 14px;
+    }
+    tr:hover td { background: var(--bg-card-hover); }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--red); }
+    .text-gold { color: var(--gold); }
+
+    .page-footer {
+      text-align: center;
+      padding: 40px 24px;
+      color: var(--text-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    .page-footer a { color: var(--gold); text-decoration: none; }
+
+    .loading-card {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 16px;
+      height: 280px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    @media (max-width: 768px) {
+      .token-grid { grid-template-columns: 1fr; }
+      .top-bar nav { display: none; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="/" class="logo">
+      <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/XieYK2a8rpN3wLQcLrDc5d/HerologowithSoldier_092f3ebf.jpg" alt="HERO">
+      <span>HERO Dapp</span>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/swap">Swap</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/live-feed">Live Feed</a>
+      <a href="/rankings" class="active">Rankings</a>
+      <a href="/holders">Holders</a>
+    </nav>
+    <a href="/" class="back-btn">← Back to App</a>
+  </div>
+
+  <div class="page-container">
+    <div class="page-header">
+      <h1>HERO Ecosystem — Token Rankings</h1>
+      <p>Real-time prices, volume, liquidity, and market data for all HERO ecosystem tokens.</p>
+    </div>
+
+    <!-- Token Cards -->
+    <div class="token-grid" id="tokenGrid">
+      <div class="loading-card"></div>
+      <div class="loading-card"></div>
+      <div class="loading-card"></div>
+    </div>
+
+    <!-- Full Rankings Table -->
+    <div class="rankings-table-container">
+      <div class="rankings-table-header">
+        <h2>All Ecosystem Tokens</h2>
+        <div class="refresh-badge"><span class="refresh-dot"></span> Auto-refreshing every 60s</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Token</th>
+            <th>Chain</th>
+            <th>Price</th>
+            <th>1H</th>
+            <th>6H</th>
+            <th>24H</th>
+            <th>Volume (24H)</th>
+            <th>Liquidity</th>
+            <th>Market Cap</th>
+            <th>Buys/Sells</th>
+          </tr>
+        </thead>
+        <tbody id="rankingsBody">
+          <tr><td colspan="11" style="text-align:center;padding:40px;color:var(--text-muted)">Loading ecosystem data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <p>HERO Dapp — Built for Veterans, by Veterans | <a href="https://www.vicfoundation.com">VIC Foundation</a> 501(c)(3)</p>
+    <p style="margin-top:4px">Data sourced from DexScreener API. Prices update every 60 seconds.</p>
+  </div>
+
+  <script>
+    const DEXSCREENER = 'https://api.dexscreener.com';
+
+    const ECOSYSTEM_TOKENS = [
+      { symbol: 'HERO', name: 'HERO (PulseChain)', chain: 'pulsechain', address: '0x35a51Dfc82032682E4Bda8AAcA87B9Bc386C3D27', iconClass: 'hero' },
+      { symbol: 'HERO', name: 'HERO (BASE)', chain: 'base', address: '0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8', iconClass: 'hero' },
+      { symbol: 'VETS', name: 'VETS', chain: 'pulsechain', address: '0x4013abBf94A745EfA7cc848989Ee83424a770060', iconClass: 'vets' },
+      { symbol: 'EMIT', name: 'EMIT', chain: 'pulsechain', address: '0x32fB5663619A657839A80133994E45c5e5cDf427', iconClass: 'emit' },
+      { symbol: 'RHINO', name: 'RHINO', chain: 'pulsechain', address: '0x6C6D7De6C5f366a1995ed5f1e273C5B3760C6043', iconClass: 'rhino' },
+      { symbol: 'TruFarm', name: 'TruFarm', chain: 'pulsechain', address: '0xCA942990EF21446Db490532E66992eD1EF76A82b', iconClass: 'trufarm' },
+    ];
+
+    let tokenData = [];
+
+    async function fetchAllTokenData() {
+      const results = [];
+
+      for (const token of ECOSYSTEM_TOKENS) {
+        try {
+          const res = await fetch(`${DEXSCREENER}/latest/dex/tokens/${token.address}`);
+          const data = await res.json();
+          const pairs = data.pairs || [];
+
+          if (pairs.length > 0) {
+            // Filter to correct chain
+            const chainPairs = pairs.filter(p =>
+              token.chain === 'base' ? p.chainId === 'base' : p.chainId === 'pulsechain'
+            );
+            const best = (chainPairs.length > 0 ? chainPairs : pairs).reduce((a, b) =>
+              (a.liquidity?.usd || 0) > (b.liquidity?.usd || 0) ? a : b
+            );
+
+            results.push({
+              ...token,
+              priceUsd: best.priceUsd || '0',
+              priceChange1h: best.priceChange?.h1 || 0,
+              priceChange6h: best.priceChange?.h6 || 0,
+              priceChange24h: best.priceChange?.h24 || 0,
+              volume24h: best.volume?.h24 || 0,
+              liquidity: best.liquidity?.usd || 0,
+              marketCap: best.marketCap || best.fdv || 0,
+              txns24h: best.txns?.h24 || { buys: 0, sells: 0 },
+              pairAddress: best.pairAddress,
+              dexUrl: best.url,
+            });
+          }
+        } catch (err) {
+          console.error(`Error fetching ${token.symbol}:`, err);
+        }
+      }
+
+      tokenData = results.sort((a, b) => b.marketCap - a.marketCap);
+      renderCards();
+      renderTable();
+    }
+
+    function renderCards() {
+      const grid = document.getElementById('tokenGrid');
+      if (tokenData.length === 0) {
+        grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">No data available</div>';
+        return;
+      }
+
+      grid.innerHTML = tokenData.map((t, i) => {
+        const price = parseFloat(t.priceUsd);
+        const priceStr = formatPrice(t.priceUsd);
+        const totalTxns = (t.txns24h.buys || 0) + (t.txns24h.sells || 0);
+        const buyPct = totalTxns > 0 ? ((t.txns24h.buys / totalTxns) * 100) : 50;
+
+        return `
+          <div class="token-card" onclick="window.open('${t.dexUrl || '#'}', '_blank')">
+            <div class="card-header">
+              <div class="token-name">
+                <div class="token-icon ${t.iconClass}">${t.symbol.slice(0, 2)}</div>
+                <div>
+                  <div class="symbol">${t.symbol}</div>
+                  <span class="chain-tag ${t.chain}">${t.chain === 'base' ? 'BASE' : 'PulseChain'}</span>
+                </div>
+              </div>
+              <div style="text-align:right;font-size:11px;color:var(--text-muted)">#${i + 1}</div>
+            </div>
+
+            <div class="price-section">
+              <div class="price">$${priceStr}</div>
+              <div class="change-row">
+                <span class="change-pill ${t.priceChange1h >= 0 ? 'up' : 'down'}">
+                  <span class="label">1H</span>${t.priceChange1h >= 0 ? '+' : ''}${t.priceChange1h.toFixed(2)}%
+                </span>
+                <span class="change-pill ${t.priceChange6h >= 0 ? 'up' : 'down'}">
+                  <span class="label">6H</span>${t.priceChange6h >= 0 ? '+' : ''}${t.priceChange6h.toFixed(2)}%
+                </span>
+                <span class="change-pill ${t.priceChange24h >= 0 ? 'up' : 'down'}">
+                  <span class="label">24H</span>${t.priceChange24h >= 0 ? '+' : ''}${t.priceChange24h.toFixed(2)}%
+                </span>
+              </div>
+            </div>
+
+            <div class="sparkline-container">
+              <canvas id="spark-${i}"></canvas>
+            </div>
+
+            <div class="stats-row">
+              <div class="stat-item">
+                <div class="label">Volume 24H</div>
+                <div class="value">$${formatNum(t.volume24h)}</div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Liquidity</div>
+                <div class="value">$${formatNum(t.liquidity)}</div>
+              </div>
+              <div class="stat-item">
+                <div class="label">Market Cap</div>
+                <div class="value">$${formatNum(t.marketCap)}</div>
+              </div>
+            </div>
+
+            <div class="txn-bar">
+              <div class="buys" style="width:${buyPct}%"></div>
+              <div class="sells" style="width:${100 - buyPct}%"></div>
+            </div>
+            <div class="txn-labels">
+              <span style="color:var(--green)">${t.txns24h.buys || 0} buys</span>
+              <span style="color:var(--red)">${t.txns24h.sells || 0} sells</span>
+            </div>
+          </div>`;
+      }).join('');
+
+      // Draw sparklines
+      tokenData.forEach((t, i) => {
+        drawSparkline(`spark-${i}`, t);
+      });
+    }
+
+    function drawSparkline(canvasId, tokenInfo) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * 2;
+      canvas.height = rect.height * 2;
+      ctx.scale(2, 2);
+
+      // Generate synthetic sparkline from price changes
+      const basePrice = parseFloat(tokenInfo.priceUsd);
+      const h24 = tokenInfo.priceChange24h / 100;
+      const h6 = tokenInfo.priceChange6h / 100;
+      const h1 = tokenInfo.priceChange1h / 100;
+
+      const points = [];
+      const numPoints = 24;
+      const startPrice = basePrice / (1 + h24);
+
+      for (let i = 0; i <= numPoints; i++) {
+        const progress = i / numPoints;
+        let priceAtPoint;
+        if (progress < 0.75) {
+          const midPrice = basePrice / (1 + h6);
+          priceAtPoint = startPrice + (midPrice - startPrice) * (progress / 0.75);
+        } else if (progress < 0.96) {
+          const midPrice = basePrice / (1 + h6);
+          const nearPrice = basePrice / (1 + h1);
+          priceAtPoint = midPrice + (nearPrice - midPrice) * ((progress - 0.75) / 0.21);
+        } else {
+          const nearPrice = basePrice / (1 + h1);
+          priceAtPoint = nearPrice + (basePrice - nearPrice) * ((progress - 0.96) / 0.04);
+        }
+        // Add some noise
+        priceAtPoint *= (1 + (Math.random() - 0.5) * 0.02);
+        points.push(priceAtPoint);
+      }
+
+      const w = rect.width;
+      const h = rect.height;
+      const min = Math.min(...points);
+      const max = Math.max(...points);
+      const range = max - min || 1;
+
+      const isUp = tokenInfo.priceChange24h >= 0;
+      const color = isUp ? '#22c55e' : '#ef4444';
+
+      // Draw gradient fill
+      const gradient = ctx.createLinearGradient(0, 0, 0, h);
+      gradient.addColorStop(0, isUp ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)');
+      gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+      points.forEach((p, i) => {
+        const x = (i / (points.length - 1)) * w;
+        const y = h - ((p - min) / range) * (h - 4);
+        if (i === 0) ctx.lineTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // Draw line
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        const x = (i / (points.length - 1)) * w;
+        const y = h - ((p - min) / range) * (h - 4);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('rankingsBody');
+      if (tokenData.length === 0) return;
+
+      tbody.innerHTML = tokenData.map((t, i) => {
+        const price = parseFloat(t.priceUsd);
+        const priceStr = formatPrice(t.priceUsd);
+        return `
+          <tr style="cursor:pointer" onclick="window.open('${t.dexUrl || '#'}', '_blank')">
+            <td style="color:var(--text-muted)">${i + 1}</td>
+            <td><strong>${t.symbol}</strong> <span style="color:var(--text-muted);font-size:12px">${t.name}</span></td>
+            <td><span class="chain-tag ${t.chain}">${t.chain === 'base' ? 'BASE' : 'PLS'}</span></td>
+            <td class="mono">$${priceStr}</td>
+            <td class="mono ${t.priceChange1h >= 0 ? 'text-green' : 'text-red'}">${t.priceChange1h >= 0 ? '+' : ''}${t.priceChange1h.toFixed(2)}%</td>
+            <td class="mono ${t.priceChange6h >= 0 ? 'text-green' : 'text-red'}">${t.priceChange6h >= 0 ? '+' : ''}${t.priceChange6h.toFixed(2)}%</td>
+            <td class="mono ${t.priceChange24h >= 0 ? 'text-green' : 'text-red'}">${t.priceChange24h >= 0 ? '+' : ''}${t.priceChange24h.toFixed(2)}%</td>
+            <td class="mono">$${formatNum(t.volume24h)}</td>
+            <td class="mono">$${formatNum(t.liquidity)}</td>
+            <td class="mono">$${formatNum(t.marketCap)}</td>
+            <td>
+              <span style="color:var(--green);font-size:12px">${t.txns24h.buys || 0}</span>
+              <span style="color:var(--text-muted);font-size:12px">/</span>
+              <span style="color:var(--red);font-size:12px">${t.txns24h.sells || 0}</span>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    function formatNum(n) {
+      if (!n || n === 0) return '0';
+      if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+      if (n >= 1e3) return (n / 1e3).toFixed(2) + 'K';
+      return n.toFixed(2);
+    }
+
+    function formatPrice(priceStr) {
+      const p = parseFloat(priceStr || '0');
+      if (p === 0) return '0.00';
+      if (p >= 1) return p.toFixed(2);
+      if (p >= 0.01) return p.toFixed(4);
+      const str = p.toFixed(20);
+      const match = str.match(/^0\.0*/);
+      if (match) {
+        const leadingZeros = match[0].length - 2;
+        return p.toFixed(Math.min(leadingZeros + 4, 10));
+      }
+      return p.toFixed(6);
+    }
+
+    // Initialize
+    fetchAllTokenData();
+    setInterval(fetchAllTokenData, 60000);
+  </script>
+</body>
+</html>
