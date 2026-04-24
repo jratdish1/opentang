@@ -515,6 +515,230 @@ def check_pulsechain():
         if pls < THRESHOLDS["pulsechain"]["min_pls"] and hero > THRESHOLDS["pulsechain"]["min_hero"] * 2:
             log.info(f"[PULSECHAIN] 💡 HERO surplus ({hero:.0f}) could cover gas deficit")
 
+# ─── BOT STATUS DASHBOARD ────────────────────────────────────────
+DASHBOARD_URL = "https://apex.herobase.io/"
+STATUS_REPORT_INTERVAL = 12  # Send status dashboard every N scans (12 x 5min = 1 hour)
+
+def gather_bot_status():
+    """
+    Gather live status for ALL 8 bots and return structured data.
+    Returns list of dicts: {name, server, mode, status, balance, health}
+    """
+    import subprocess
+    import re
+    bots = []
+
+    # 1. Volt-Kraken (VDS)
+    try:
+        r = subprocess.run(
+            ["pm2", "show", "volt-kraken"],
+            capture_output=True, text=True, timeout=10,
+        )
+        is_online = "online" in r.stdout
+        # Check if LIVE mode from env
+        mode = "LIVE" if os.environ.get("KRAKEN_LIVE_MODE", "1") == "1" else "PAPER"
+        # Get portfolio from logs
+        balance = ""
+        try:
+            lr = subprocess.run(
+                ["tail", "-20", "/root/.pm2/logs/volt-kraken-out.log"],
+                capture_output=True, text=True, timeout=5,
+            )
+            for line in reversed(lr.stdout.splitlines()):
+                m = re.search(r'Portfolio:\s*\$(\S+)', line)
+                if m:
+                    balance = f"${m.group(1)}"
+                    break
+        except Exception:
+            pass
+        bots.append({
+            "name": "Volt-Kraken", "server": "VDS", "mode": mode,
+            "status": "ONLINE" if is_online else "DOWN",
+            "balance": balance or "scanning",
+            "health": "🟢" if is_online else "🔴",
+        })
+    except Exception:
+        bots.append({"name": "Volt-Kraken", "server": "VDS", "mode": "?", "status": "ERROR", "balance": "?", "health": "🔴"})
+
+    # 2. Kraken-bot-v2 (VDS)
+    try:
+        r = subprocess.run(["pm2", "show", "kraken-bot-v2"], capture_output=True, text=True, timeout=10)
+        is_online = "online" in r.stdout
+        kraken_bal = kraken_request("Balance")
+        usdc = float(kraken_bal.get("USDC", 0))
+        zusd = float(kraken_bal.get("ZUSD", 0))
+        total = usdc + zusd
+        bots.append({
+            "name": "Kraken-bot-v2", "server": "VDS", "mode": "LIVE",
+            "status": "ONLINE" if is_online else "DOWN",
+            "balance": f"${total:.0f}",
+            "health": "🟢" if is_online and total >= 50 else "🟡" if is_online else "🔴",
+        })
+    except Exception:
+        bots.append({"name": "Kraken-bot-v2", "server": "VDS", "mode": "LIVE", "status": "ERROR", "balance": "?", "health": "🔴"})
+
+    # 3. Kalshi-bot-v4 (VDS)
+    try:
+        r = subprocess.run(["pm2", "show", "kalshi-bot-v4"], capture_output=True, text=True, timeout=10)
+        is_online = "online" in r.stdout
+        balance = "?"
+        try:
+            lr = subprocess.run(
+                ["tail", "-200", "/root/.pm2/logs/kalshi-bot-v4-out.log"],
+                capture_output=True, text=True, timeout=5,
+            )
+            for line in reversed(lr.stdout.splitlines()):
+                m = re.search(r'Balance:\s*\$?(\d+\.?\d*)', line)
+                if m:
+                    balance = f"${float(m.group(1)):.0f}"
+                    break
+        except Exception:
+            pass
+        bots.append({
+            "name": "Kalshi-bot-v4", "server": "VDS", "mode": "LIVE",
+            "status": "ONLINE" if is_online else "DOWN",
+            "balance": balance,
+            "health": "🟢" if is_online else "🔴",
+        })
+    except Exception:
+        bots.append({"name": "Kalshi-bot-v4", "server": "VDS", "mode": "LIVE", "status": "ERROR", "balance": "?", "health": "🔴"})
+
+    # 4. Polymarket (Hetzner EU)
+    try:
+        r = subprocess.run(
+            ["ssh", "polymarket-eu", "pm2 show polymarket-bot 2>/dev/null | grep status"],
+            capture_output=True, text=True, timeout=15,
+        )
+        is_online = "online" in r.stdout
+        balance = "?"
+        try:
+            br = subprocess.run(
+                ["ssh", "polymarket-eu",
+                 "grep -i 'State:' /opt/polymarket-bot/logs/live_err.log | tail -1"],
+                capture_output=True, text=True, timeout=15,
+            )
+            m = re.search(r'Balance=\$?(\d+\.?\d*)', br.stdout)
+            if m:
+                balance = f"${float(m.group(1)):.0f}"
+        except Exception:
+            pass
+        bots.append({
+            "name": "Polymarket", "server": "Hetzner EU", "mode": "LIVE",
+            "status": "ONLINE" if is_online else "DOWN",
+            "balance": balance,
+            "health": "🟢" if is_online else "🔴",
+        })
+    except Exception:
+        bots.append({"name": "Polymarket", "server": "Hetzner EU", "mode": "LIVE", "status": "ERROR", "balance": "?", "health": "🔴"})
+
+    # 5. HABFF-arb (VDS / BASE)
+    try:
+        r = subprocess.run(["pm2", "show", "habff-arb"], capture_output=True, text=True, timeout=10)
+        is_online = "online" in r.stdout
+        eth = get_native_balance(BASE_RPC, DEX_WALLET)
+        hero = get_token_balance(BASE_RPC, HERO_BASE, DEX_WALLET)
+        bal_str = f"{eth:.4f} ETH" if eth else "?"
+        bots.append({
+            "name": "HABFF-arb", "server": "VDS", "mode": "LIVE",
+            "status": "ONLINE" if is_online else "DOWN",
+            "balance": bal_str,
+            "health": "🟢" if is_online and eth and eth >= 0.01 else "🟡" if is_online else "🔴",
+        })
+    except Exception:
+        bots.append({"name": "HABFF-arb", "server": "VDS", "mode": "LIVE", "status": "ERROR", "balance": "?", "health": "🔴"})
+
+    # 6. Hero-farm-v6 (VDS / PulseChain)
+    try:
+        r = subprocess.run(["pm2", "show", "hero-farm-v6"], capture_output=True, text=True, timeout=10)
+        is_online = "online" in r.stdout
+        pls = get_native_balance(PULSE_RPC, DEX_WALLET)
+        hero_p = get_token_balance(PULSE_RPC, HERO_PULSE, DEX_WALLET)
+        bal_str = f"{pls:.0f} PLS" if pls else "?"
+        bots.append({
+            "name": "Hero-farm-v6", "server": "VDS", "mode": "LIVE",
+            "status": "ONLINE" if is_online else "DOWN",
+            "balance": bal_str,
+            "health": "🟢" if is_online and pls and pls >= 50000 else "🟡" if is_online else "🔴",
+        })
+    except Exception:
+        bots.append({"name": "Hero-farm-v6", "server": "VDS", "mode": "LIVE", "status": "ERROR", "balance": "?", "health": "🔴"})
+
+    # 7. Hero-vets-pulse (VDS / PulseChain)
+    try:
+        r = subprocess.run(["pm2", "show", "hero-vets-pulse"], capture_output=True, text=True, timeout=10)
+        is_online = "online" in r.stdout
+        vets = get_token_balance(PULSE_RPC, VETS_PULSE, DEX_WALLET)
+        bal_str = f"{vets:.0f} VETS" if vets else "?"
+        bots.append({
+            "name": "Hero-vets-pulse", "server": "VDS", "mode": "LIVE",
+            "status": "ONLINE" if is_online else "DOWN",
+            "balance": bal_str,
+            "health": "🟢" if is_online else "🔴",
+        })
+    except Exception:
+        bots.append({"name": "Hero-vets-pulse", "server": "VDS", "mode": "LIVE", "status": "ERROR", "balance": "?", "health": "🔴"})
+
+    # 8. Auto-sustain (VDS)
+    bots.append({
+        "name": "Auto-sustain", "server": "VDS", "mode": "—",
+        "status": "ONLINE",
+        "balance": "daemon",
+        "health": "🟢",
+    })
+
+    return bots
+
+
+def send_status_dashboard(scan_count):
+    """
+    Send a formatted Bot Status Dashboard to Telegram.
+    Looks like the table the user liked:
+    # | Bot | Server | Mode | Status | Balance
+    """
+    bots = gather_bot_status()
+
+    # Count health
+    green = sum(1 for b in bots if b["health"] == "🟢")
+    yellow = sum(1 for b in bots if b["health"] == "🟡")
+    red = sum(1 for b in bots if b["health"] == "🔴")
+    total = len(bots)
+
+    if red > 0:
+        header = "🔴 BOT STATUS — ISSUES DETECTED"
+    elif yellow > 0:
+        header = "🟡 BOT STATUS — WARNINGS"
+    else:
+        header = "🟢 BOT STATUS — ALL LIVE, ALL GREEN"
+
+    # Build the table rows
+    rows = []
+    for i, b in enumerate(bots, 1):
+        mode_icon = "🔴" if b["mode"] == "LIVE" else "🟢" if b["mode"] == "—" else "📄"
+        status_icon = b["health"]
+        rows.append(
+            f"{i}. {status_icon} <b>{b['name']}</b>\n"
+            f"   📍 {b['server']} | {mode_icon} {b['mode']} | {b['status']}\n"
+            f"   💰 {b['balance']}"
+        )
+
+    table = "\n\n".join(rows)
+
+    msg = (
+        f"📊 <b>{header}</b>\n"
+        f"{'━' * 30}\n\n"
+        f"{table}\n\n"
+        f"{'━' * 30}\n"
+        f"✅ {green}/{total} Green"
+        + (f" | ⚠️ {yellow} Warn" if yellow else "")
+        + (f" | 🔴 {red} Down" if red else "")
+        + f"\n🔄 Scan #{scan_count}\n"
+        f"📊 <a href='{DASHBOARD_URL}'>Apex Dashboard</a>"
+    )
+
+    send_telegram(msg, siren=(red > 0))
+    log.info(f"[DASHBOARD] Status report sent: {green}/{total} green")
+
+
 # ─── MAIN LOOP ────────────────────────────────────────────────────
 CHECK_INTERVAL = 300  # 5 minutes
 MAX_CONSECUTIVE_ERRORS = 10
@@ -522,21 +746,27 @@ MAX_CONSECUTIVE_ERRORS = 10
 def main():
     """Main daemon loop — runs forever, checks every 5 minutes."""
     log.info("=" * 60)
-    log.info("🚀 SELF-SUSTAINING AUTO-REFILL DAEMON v1.0 STARTED")
+    log.info("🚀 SELF-SUSTAINING AUTO-REFILL DAEMON v2.0 STARTED")
     log.info(f"   Check interval: {CHECK_INTERVAL}s")
+    log.info(f"   Status report every: {STATUS_REPORT_INTERVAL} scans ({STATUS_REPORT_INTERVAL * CHECK_INTERVAL // 60} min)")
     log.info(f"   Telegram: {TG_CHAT_ID}")
     log.info("=" * 60)
 
+    # Send startup dashboard immediately
     send_telegram(
-        "🟢 <b>Auto-Sustain Daemon ONLINE</b>\n\n"
+        "🟢 <b>Auto-Sustain Daemon v2.0 ONLINE</b>\n\n"
         "Monitoring all trading bots:\n"
-        "• Kraken (USDC/ZUSD threshold)\n"
-        "• Kalshi (balance monitoring)\n"
-        "• Polymarket (USDC.e via Hetzner)\n"
-        "• HABFF BASE (ETH gas + HERO)\n"
-        "• PulseChain (PLS gas + HERO)\n\n"
-        f"Check interval: {CHECK_INTERVAL // 60} minutes\n"
-        "Mode: SELF-SUSTAINING 24/7/365",
+        "• Volt-Kraken (Kraken CEX)\n"
+        "• Kraken-bot-v2 (CEX trading)\n"
+        "• Kalshi-bot-v4 (prediction markets)\n"
+        "• Polymarket (Hetzner EU)\n"
+        "• HABFF-arb (BASE DEX)\n"
+        "• Hero-farm-v6 (PulseChain)\n"
+        "• Hero-vets-pulse (PulseChain)\n\n"
+        f"Check interval: {CHECK_INTERVAL // 60} min\n"
+        f"Status report: every {STATUS_REPORT_INTERVAL * CHECK_INTERVAL // 60} min\n"
+        "Mode: SELF-SUSTAINING 24/7/365\n\n"
+        f"📊 <a href='{DASHBOARD_URL}'>Apex Dashboard</a>",
         siren=False,
     )
 
@@ -550,9 +780,9 @@ def main():
         log.info(f"{'─' * 40}")
 
         try:
-            # Check each bot
+            # Check each bot (refill logic)
             check_kraken()
-            time.sleep(2)  # Rate limit between checks
+            time.sleep(2)
 
             check_kalshi()
             time.sleep(2)
@@ -567,10 +797,14 @@ def main():
 
             consecutive_errors = 0
 
-            # Daily summary at midnight UTC
+            # ─── STATUS DASHBOARD (every N scans) ────────────────
+            if scan_count % STATUS_REPORT_INTERVAL == 0:
+                send_status_dashboard(scan_count)
+
+            # ─── DAILY SUMMARY (midnight UTC) ────────────────────
             now = datetime.now(timezone.utc)
             if now.hour == 0 and now.minute < 6:
-                # Gather all balances for daily report
+                # Full daily report with all balances
                 kraken_bal = kraken_request("Balance")
                 usdc = float(kraken_bal.get("USDC", 0))
                 zusd = float(kraken_bal.get("ZUSD", 0))
@@ -578,14 +812,23 @@ def main():
                 hero_b = get_token_balance(BASE_RPC, HERO_BASE, DEX_WALLET) or 0
                 pls = get_native_balance(PULSE_RPC, DEX_WALLET) or 0
                 hero_p = get_token_balance(PULSE_RPC, HERO_PULSE, DEX_WALLET) or 0
+                vets = get_token_balance(PULSE_RPC, VETS_PULSE, DEX_WALLET) or 0
+
+                all_green = all([usdc + zusd >= 50, eth >= 0.01, pls >= 50000, hero_b >= 1000, hero_p >= 5000])
 
                 msg = (
-                    f"📊 <b>DAILY AUTO-SUSTAIN REPORT</b>\n\n"
-                    f"<b>Kraken:</b> USDC=${usdc:.2f} | ZUSD=${zusd:.2f}\n"
-                    f"<b>BASE:</b> ETH={eth:.6f} | HERO={hero_b:.0f}\n"
-                    f"<b>PulseChain:</b> PLS={pls:.0f} | HERO={hero_p:.0f}\n\n"
-                    f"Scans today: {scan_count}\n"
-                    f"Status: {'🟢 ALL GREEN' if all([usdc >= 50, eth >= 0.01, pls >= 50000]) else '🟡 SOME LOW'}"
+                    f"📊 <b>DAILY AUTO-SUSTAIN REPORT</b>\n"
+                    f"{'━' * 30}\n\n"
+                    f"<b>💱 Kraken:</b>\n"
+                    f"   USDC: ${usdc:.2f} | ZUSD: ${zusd:.2f}\n\n"
+                    f"<b>🔵 BASE Chain:</b>\n"
+                    f"   ETH: {eth:.6f} | HERO: {hero_b:,.0f}\n\n"
+                    f"<b>💜 PulseChain:</b>\n"
+                    f"   PLS: {pls:,.0f} | HERO: {hero_p:,.0f} | VETS: {vets:,.0f}\n\n"
+                    f"{'━' * 30}\n"
+                    f"🔄 Scans today: {scan_count}\n"
+                    f"{'🟢 ALL GREEN' if all_green else '🟡 SOME BELOW THRESHOLD'}\n\n"
+                    f"📊 <a href='{DASHBOARD_URL}'>Apex Dashboard</a>"
                 )
                 send_telegram(msg, siren=False)
 
@@ -598,10 +841,11 @@ def main():
                 send_telegram(
                     f"🔴 <b>AUTO-SUSTAIN DAEMON ERROR</b>\n"
                     f"{consecutive_errors} consecutive errors!\n"
-                    f"Last error: {str(e)[:200]}",
+                    f"Last error: {str(e)[:200]}\n\n"
+                    f"📊 <a href='{DASHBOARD_URL}'>Apex Dashboard</a>",
                     siren=True,
                 )
-                consecutive_errors = 0  # Reset after alert
+                consecutive_errors = 0
 
         log.info(f"[MAIN] Next check in {CHECK_INTERVAL}s...")
         time.sleep(CHECK_INTERVAL)
