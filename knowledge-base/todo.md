@@ -143,7 +143,7 @@
 - [ ] Integrate poly_data Goldsky subgraph for deeper wallet analysis
 - [ ] Install polymarket-cli (Rust) on Hetzner for fast market scanning
 
-## ACTIVE BOT STATUS (as of 2026-04-22 20:06 UTC)
+## ACTIVE BOT STATUS (as of 2026-04-24 07:01 UTC)
 
 | Server | Bot | Status | Uptime | P&L / Balance |
 |--------|-----|--------|--------|---------------|
@@ -299,3 +299,10 @@
 - [x] hero_farm_v6.py: Fixed datetime.UTC → timezone.utc
 - [x] DexScreener verified all 5 LP pairs (BASE + PulseChain)
 - [x] HABFF contract fee exemption confirmed on-chain (isFeeExempt = TRUE)
+- [x] Deploy force-redeem daemon v1.0 — sweeps ALL bots every 12h (Polymarket redeem, Kalshi settle, Kraken stale orders, DEX health, ABLE check)
+- [x] Fix Polymarket redeem_all() — was NEVER running, now force-triggered every 12h
+- [x] Deploy auto-sustain daemon v2 — 5-min scans, profit recycling, Telegram alerts, hourly dashboard
+- [x] Polymarket flipped PAPER to LIVE, POL to USDC.e swap fixed, balance refilled to $52.92
+- [x] Volt-Kraken flipped to LIVE mode (KRAKEN_LIVE_MODE=1)
+- [x] HERO Whitepaper v2.0: 2000 NFTs, flat 2% fee, dual-chain, correct addresses
+- [x] Both chain NFT blueprints updated and pushed to GitHub KB
