@@ -24,6 +24,19 @@ import subprocess
 import logging
 from datetime import datetime, timezone, timedelta
 
+# Load env vars from .env_architecture
+import os as _os
+_env_file = "/root/.env_architecture"
+if _os.path.exists(_env_file):
+    with open(_env_file) as _f:
+        for _line in _f:
+            _line = _line.strip()
+            if _line and not _line.startswith("#") and "=" in _line:
+                _k, _v = _line.split("=", 1)
+                _v = _v.strip(chr(34)).strip("'")
+                _os.environ.setdefault(_k.strip(), _v)
+
+
 log = logging.getLogger("trading_bots")
 
 # ─── CONFIG ──────────────────────────────────────────────────
