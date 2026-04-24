@@ -214,8 +214,8 @@ The HERO NFT Collection consists of **2,000 unique steampunk-military trading ca
 | **Chains** | PulseChain (1,000) & BASE (1,000) — Independent |
 | **Max Per Wallet** | 5 per chain |
 | **Metadata Storage** | IPFS (permanent, decentralized) |
-| **Mint Price (BASE)** | 0.001 ETH |
-| **Mint Price (PulseChain)** | 100,000 PLS |
+| **Mint Price (BASE)** | 0.005 WETH |
+| **Mint Price (PulseChain)** | 3,500,000 PLS |
 | **Mint Revenue** | 85% Treasury (Charity), 15% Operations |
 
 ### 8.2 Dual-Chain Independent Collections
@@ -224,8 +224,8 @@ Each chain has its own independent 1,000-NFT collection. There is no cross-chain
 
 | Chain | Collection Size | RNG Method | Mint Price | Fee Discount |
 |-------|----------------|------------|------------|-------------|
-| BASE | 1,000 NFTs | Chainlink VRF v2.5 | 0.001 ETH | 2% on BASE $HERO only |
-| PulseChain | 1,000 NFTs | Commit-Reveal (2-tx) | 100,000 PLS | 2% on PulseChain $HERO only |
+| BASE | 1,000 NFTs | Chainlink VRF v2.5 | 0.005 WETH | 2% on BASE $HERO only |
+| PulseChain | 1,000 NFTs | Commit-Reveal (2-tx) | 3,500,000 PLS | 2% on PulseChain $HERO only |
 
 > **Design Decision:** Holding a BASE NFT gives a 2% discount on BASE $HERO transfers ONLY. Holding a PulseChain NFT gives a 2% discount on PulseChain $HERO transfers ONLY. This keeps the system simple, trustless, and free of bridge risk.
 
@@ -480,7 +480,7 @@ HERO operates on both PulseChain and BASE with independent contract deployments.
 | Token Address | `0x35a51Dfc82032682E4Bda8AAcA87B9Bc386C3D27` | `0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8` |
 | Buy & Burn Address | `0x9016a0DAA30bD29A51a1a2905352877947f904E9` | `0x67bEF0A8Be3ef576bF4ab2D904FCbe82E9846670` |
 | NFT Collection | 1,000 NFTs (independent) | 1,000 NFTs (independent) |
-| NFT Mint Price | 100,000 PLS | 0.001 ETH |
+| NFT Mint Price | 3,500,000 PLS | 0.005 WETH |
 | NFT Fee Discount | 2% on PulseChain $HERO only | 2% on BASE $HERO only |
 | Native Coin | PLS | ETH |
 | Primary DEX | PulseX | Uniswap v2 |
@@ -554,7 +554,7 @@ The ecosystem relies on external systems including DEX routers, Chainlink oracle
 - Artist integration pipeline built (compositor, metadata, IPFS)
 - Immutable Ownership Specification v2.0 locked
 - Flat 2% fee discount utility — on-chain enforced via `balanceOf`
-- Mint prices: 0.001 ETH (BASE) / 100,000 PLS (PulseChain)
+- Mint prices: 0.005 WETH (BASE) / 3,500,000 PLS (PulseChain)
 - Mint revenue: 85% treasury (charity), 15% operations
 - Max 5 NFTs per wallet per chain
 - **NEXT:** Artist delivers final layer artwork → Generate 1,000 composites per chain → IPFS upload → Deploy to testnets

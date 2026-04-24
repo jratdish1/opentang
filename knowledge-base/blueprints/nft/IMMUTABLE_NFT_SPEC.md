@@ -138,7 +138,7 @@ Cross-chain NFT verification (e.g., via Chainlink CCIP or LayerZero) introduces 
 | Collection Size | 1,000 NFTs | 1,000 NFTs |
 | RNG Method | Chainlink VRF v2.5 | Commit-Reveal |
 | Mint Steps | 1 transaction | 2 transactions |
-| Mint Price | 0.001 ETH | 100,000 PLS |
+| Mint Price | 0.005 WETH | 3,500,000 PLS |
 | Fee Discount | 2% on BASE $HERO | 2% on PulseChain $HERO |
 | Cross-Chain Discount | NO | NO |
 | DEX Exclusions | Uniswap, Aerodrome | PulseX, 9mm, 9inch |

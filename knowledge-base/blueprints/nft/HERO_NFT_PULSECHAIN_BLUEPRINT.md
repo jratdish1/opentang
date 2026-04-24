@@ -17,7 +17,7 @@
 | **Theme** | Steampunk-Military Trading Cards |
 | **Animated NFTs** | 4 video NFTs (UK, South Korea, US Marine, Mexico) |
 | **Max Per Wallet** | 5 |
-| **Mint Price** | 100,000 PLS |
+| **Mint Price** | 3,500,000 PLS |
 | **Mint Revenue Split** | 85% Treasury (Charity), 15% Operations |
 | **RNG Method** | Commit-Reveal (2-tx, no Chainlink VRF on PulseChain) |
 | **Cross-Chain** | NO — Independent collection, no bridge dependency |
@@ -74,7 +74,7 @@ Identical contract to BASE chain with PulseChain-specific parameters:
 
 | Parameter | BASE | PulseChain |
 |-----------|------|------------|
-| Mint Price | 0.001 ETH | 100,000 PLS |
+| Mint Price | 0.005 WETH | 3,500,000 PLS |
 | RNG | Chainlink VRF v2.5 | Commit-Reveal (2-tx) |
 | Block Time | ~2s | ~10s |
 | DEX Exclusions | Uniswap, Aerodrome | PulseX, 9mm, 9inch |
@@ -96,7 +96,7 @@ Key functions:
 ### Commit-Reveal RNG (PulseChain-specific)
 
 Since PulseChain has no Chainlink VRF:
-1. **Commit**: User submits hash(secret + tokenId) + pays mint price (100,000 PLS)
+1. **Commit**: User submits hash(secret + tokenId) + pays mint price (3,500,000 PLS)
 2. **Wait**: 5+ blocks pass (~50 seconds, anti-manipulation)
 3. **Reveal**: User reveals secret — contract verifies hash, generates traits from future block hash + secret
 4. **Result**: Provably fair — neither user nor miner could predict the outcome

@@ -17,7 +17,7 @@
 | **Theme** | Steampunk-Military Trading Cards |
 | **Animated NFTs** | 4 video NFTs (UK, South Korea, US Marine, Mexico) |
 | **Max Per Wallet** | 5 |
-| **Mint Price** | 0.001 ETH |
+| **Mint Price** | 0.005 WETH |
 | **Mint Revenue Split** | 85% Treasury (Charity), 15% Operations |
 | **RNG Method** | Chainlink VRF v2.5 (1 transaction) |
 | **Cross-Chain** | NO — Independent collection, no bridge dependency |
