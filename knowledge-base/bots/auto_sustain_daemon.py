@@ -52,8 +52,30 @@ log = logging.getLogger("auto-sustain")
 TG_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "8755508099:AAFDeEvGIZU-EsBWJk7r3j_2gIeYvmJ1YJc")
 TG_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "1760124019")
 
+SNOOZE_FILE = "/tmp/auto_sustain_snooze"
+SNOOZE_DURATION = 3600  # 1 hour default
+
+def is_snoozed() -> bool:
+    """Check if alerts are snoozed. Snooze file auto-expires after SNOOZE_DURATION."""
+    try:
+        if os.path.exists(SNOOZE_FILE):
+            age = time.time() - os.path.getmtime(SNOOZE_FILE)
+            if age < SNOOZE_DURATION:
+                remaining = int((SNOOZE_DURATION - age) / 60)
+                log.info(f"[TG] 💤 Alerts snoozed ({remaining} min remaining)")
+                return True
+            else:
+                # Snooze expired — clean up
+                os.remove(SNOOZE_FILE)
+                log.info("[TG] 💤 Snooze expired — alerts resumed")
+    except Exception:
+        pass
+    return False
+
 def send_telegram(msg: str, siren: bool = False):
-    """Send Telegram alert. siren=True adds 🚨 red siren prefix."""
+    """Send Telegram alert. siren=True adds 🚨 red siren prefix. Respects snooze."""
+    if is_snoozed():
+        return
     prefix = "🚨🚨🚨 AUTO-REFILL ALERT 🚨🚨🚨\n\n" if siren else ""
     text = f"{prefix}{msg}\n\n⏰ {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}"
     try:
