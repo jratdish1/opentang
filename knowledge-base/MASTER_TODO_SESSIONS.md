@@ -294,3 +294,53 @@
 - n8n = orchestration LAYER (triggers, scheduling, data flow)
 - Combined = fully autonomous AI company
 
+
+---
+
+## SESSION 13: Herobase.io & Wallet Cleanup (CRITICAL)
+**Server**: VPS1 (herobase.io) + VDS-S (wallet.herobase.io)
+**Priority**: HIGH (broken user-facing features)
+**Timeline**: 1-2 sessions
+
+### Critical Issue: tRPC Backend Broken
+wallet.herobase.io tRPC backend is NOT running — ALL data pages show zeros/loading:
+- Dashboard
+- Treasury
+- Buy & Burn
+- DEX Analytics
+- Media Hub
+- Community Hub
+- DAO
+
+### What Needs to Happen:
+- [ ] Get the tRPC server running on VDS-S
+- [ ] Set up the database (likely PostgreSQL/SQLite)
+- [ ] Configure environment variables
+- [ ] Start the server process via PM2
+- [ ] Verify all data endpoints return real data
+
+### dashboard.vicfoundation.com Integration:
+- Returns Next.js RSC payload, not a REST API
+- Shows "HERO Token Dashboard" title
+- Could potentially scrape data from it as fallback
+
+### Issues Found:
+- [ ] FIX: tRPC backend broken on wallet.herobase.io — ALL data pages show zeros/loading
+- [ ] FIX: Multiple dist backups (dist.bak.20260424, 29, 30) — cleanup needed
+- [ ] FIX: hero-wallet-web on VDS-S has 16 restarts — stability issue
+- [ ] FIX: No visible live price feeds on homepage — priceFeed.ts exists but not displayed
+- [ ] VERIFY: Boot Camp nav item — functional or placeholder?
+
+### Priority Fixes (in order):
+1. Get tRPC server running (fixes Dashboard, Treasury, Buy&Burn, DEX Analytics, Media, Community, DAO)
+2. Clean up old dist backups on VPS1
+3. Verify all nav links work end-to-end
+4. Add live price ticker for HERO/VETS on homepage
+5. Mobile responsiveness check
+6. Performance audit (page load time)
+
+### Key Token Addresses (from priceFeed.ts):
+- HERO (PulseChain): 0x35a51Dfc82032682E4Bda8AAcA87B9Bc386C3D27
+- VETS (PulseChain): 0x4013abBf94A745EfA7cc848989Ee83424a770060
+- HERO (Base): 0x00Fa69ED03d3337085A6A87B691E8a02d04Eb5f8
+
