@@ -240,3 +240,57 @@
 
 *Master list maintained in brain-memory + GitHub (jratdish1/brain-memory)*
 *Last updated: May 3, 2026 — Session complete*
+
+---
+
+## SESSION 11: OnlyFans AI Persona (Autonomous Income Stream)
+**Server**: VPS2 (ISOLATED — no connection to VETS/HERO branding)
+**Priority**: MEDIUM (high revenue potential, platform risk)
+**Timeline**: 4-6 weeks to first revenue
+**Expected ROI**: $10K-$40K/month net
+
+### Tasks:
+- [ ] Create persona.md (biography, voice rules, forbidden topics)
+- [ ] Train Flux LoRA on consistent face (47 reference shots, 3 lighting setups)
+- [ ] Clone voice in ElevenLabs from 90-sec Fiverr audio ($40)
+- [ ] Build brain.md subscriber memory system (JSON per user)
+- [ ] Set up Claude API polling cron (every 30 seconds)
+- [ ] Create OnlyFans account under separate identity
+- [ ] Deploy to VPS2 with PM2 process management
+- [ ] Test for 1 week before going public
+- [ ] Scale to 3-5 personas if first validates
+
+### Risks:
+- OnlyFans TOS gray area (AI content not explicitly banned yet)
+- Ethical concerns (subscribers think persona is real)
+- Platform risk (OF controls account, takes 20%)
+- Competition (6.9M views on this strategy = everyone trying it)
+
+---
+
+## SESSION 12: The Agency Deployment (144 AI Specialists)
+**Server**: VDS-M (primary), distribute fleet-wide
+**Priority**: HIGH (immediate force multiplier)
+**Timeline**: 1 session to deploy, ongoing optimization
+**Repo**: /opt/apex-agent/repos/agency-agents/
+
+### Tasks:
+- [ ] Run install script: ./scripts/install.sh --tool claude-code
+- [ ] Deploy key agents for our use cases:
+  - Growth Hacker → HERO/VETS social media growth
+  - Content Creator → YouTube + blog automation
+  - Twitter Engager → X account engagement
+  - Reddit Community Builder → crypto community
+  - Financial Analyst → trading intelligence
+  - Marketing specialists → token promotion
+- [ ] Integrate with Hermes ecosystem (Skill Factory + Maestro)
+- [ ] Connect to n8n for agent orchestration
+- [ ] Test agents in sandbox before production deployment
+- [ ] Distribute relevant agents to VPS1/VPS2/VPS3
+
+### Architecture:
+- Hermes = autonomous agent FRAMEWORK (memory, skills, coordination)
+- The Agency = specialized agent PERSONALITIES (expertise, workflows)
+- n8n = orchestration LAYER (triggers, scheduling, data flow)
+- Combined = fully autonomous AI company
+
