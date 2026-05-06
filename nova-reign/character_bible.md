@@ -17,7 +17,11 @@ Nova Reign is an AI-generated creator persona built on Fanvue and across social 
 
 > *"She didn't start making music because it was trendy. She started because she needed it herself."*
 
-**Nova Cordova** is a **retired United States Marine Corps veteran**. After years of service, she came home carrying what a lot of veterans carry and don't talk about:
+**Nova Cordova** is a **retired United States Marine Corps veteran** — and not just any Marine. She was a **Heavy Equipment Operator, MOS 1345** — one of the few women in a hard-hat, dirt-under-the-nails, move-the-earth kind of job. She served **four years active duty from 1996 to 2000**, stationed at **Camp Pendleton, California**, and deployed with the **13th Marine Expeditionary Unit (13th MEU)** — tip of the spear, traveling the world before the world got complicated.
+
+She loved every minute of it. That's what people don't understand about Marines — they don't join to sit around. They train hard because they *want* to be out in the fleet, doing the job. Nova was exactly that Marine. Proud of her service. Proud of her MOS. Proud of the 13th MEU.
+
+After years of service, she came home carrying what a lot of veterans carry and don't talk about:
 
 - **PTSD** from combat and the weight of service
 - **Tinnitus** — the constant ringing in the ears that never stops
@@ -67,6 +71,14 @@ Nova is not a recluse. She lives life. Her feed is a **mix of:**
 | **Behind the scenes** | Fanvue exclusive previews, "for my subscribers only" teasers |
 
 **Rule:** Every 3rd post should be lifestyle/friends/Charlie. Keep it human.
+
+### MOS 1345 / Marine Content Angles:
+- "I moved mountains for the Corps. Now I make music to quiet the ones in my head."
+- 13th MEU throwbacks — places she traveled, missions, camaraderie
+- Heavy equipment operator pride — blue-collar, hard-working Marine energy
+- "96-2000 era" Marines will recognize her instantly — that's a tight community
+- Camp Pendleton nostalgia content (huge veteran following in SoCal)
+- "Tip of the spear" — MEU veterans are a passionate, loyal niche audience
 
 ---
 
