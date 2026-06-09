@@ -223,46 +223,93 @@ export const revenueAllocation = [
 export const roadmapPhases = [
   {
     phase: 1,
-    title: "PulseChain Launch",
-    status: "upcoming" as const,
+    title: "V2 Contract & Static Collection",
+    status: "in-progress" as const,
     items: [
-      "555 animated NFTs deployed on PulseChain",
-      "Mint price in PLS with $HERO token discount",
-      "Whitelist for $HERO and $VETS token holders",
-      "Staking contract deployment"
+      "555 static trading cards complete — 10 categories, 5 rarity tiers",
+      "HeroNFTV2 ERC-721 contract with UUPS upgradeable proxy",
+      "Mint reflections — holders earn on every new mint",
+      "Built-in marketplace — no OpenSea dependency",
+      "Buy-and-burn $HERO token on every transaction"
     ]
   },
   {
     phase: 2,
-    title: "BASE Launch",
+    title: "Dual-Chain Launch",
     status: "upcoming" as const,
     items: [
-      "Mirrored 555 collection on BASE network",
-      "Mint price in ETH with $HERO discount",
-      "Cross-chain bridge activation",
-      "OpenSea & marketplace listings"
+      "PulseChain mainnet deployment — 555 animated NFTs",
+      "BASE mainnet deployment — mirrored 555 collection",
+      "Whitelist for $HERO and $VETS token holders",
+      "Staking contract — rarer NFTs earn higher APY",
+      "Cross-chain bridge activation"
     ]
   },
   {
     phase: 3,
-    title: "Expansion",
+    title: "NOVA & Expansion",
     status: "upcoming" as const,
     items: [
-      "New characters added quarterly via community vote",
-      "International hero expansion — more countries",
+      "NOVA-style talking NFT characters via D-ID V2",
+      "New animated characters added quarterly via DAO vote",
+      "International hero expansion — 50+ nations represented",
       "Veteran organization collaboration NFTs",
-      "Physical merch store launch"
+      "Physical merch store — challenge coins, patches, apparel"
     ]
   }
 ];
 
 export const collectionStats = {
   totalSupply: 555,
+  staticCards: 555,
+  categories: 10,
+  nations: 50,
   chains: ["PulseChain", "BASE"],
   artStyle: "Cartoon / Comic Book",
   mediaFormat: "MP4 Video (H.264 + AAC)",
   resolution: "1080 × 1920",
   duration: "8s Looping",
   tokenStandard: "ERC-721",
-  royalty: "5%"
+  royalty: "5%",
+  contractVersion: "V2 — UUPS Upgradeable",
+  features: ["Mint Reflections", "Built-in Marketplace", "Buy-and-Burn", "Staking"]
 };
+
+export const v2ContractFeatures = [
+  {
+    name: "Mint Reflections",
+    icon: "Coins",
+    color: "#C9A84C",
+    description: "Every new mint distributes a percentage of the mint price to all existing holders, proportional to their holdings."
+  },
+  {
+    name: "Built-in Marketplace",
+    icon: "Store",
+    color: "#3B82F6",
+    description: "List, buy, and sell $HERO NFTs directly on-chain. No OpenSea, no platform fees — just a 2.5% protocol fee that funds the treasury."
+  },
+  {
+    name: "Buy-and-Burn",
+    icon: "Flame",
+    color: "#EF4444",
+    description: "A percentage of every marketplace transaction is used to buy $HERO tokens from the open market and burn them permanently, reducing supply."
+  },
+  {
+    name: "NFT Staking",
+    icon: "Lock",
+    color: "#9333EA",
+    description: "Stake your animated NFTs to earn $HERO token rewards. Legendary NFTs earn 5x the base rate. Rewards compound daily."
+  },
+  {
+    name: "UUPS Proxy",
+    icon: "Shield",
+    color: "#10B981",
+    description: "Universal Upgradeable Proxy Standard — the contract can be upgraded to add new features without migrating NFTs or losing token IDs."
+  },
+  {
+    name: "ERC-2981 Royalties",
+    icon: "Percent",
+    color: "#F59E0B",
+    description: "On-chain royalty standard — 5% royalty enforced at the contract level, compatible with all major NFT marketplaces."
+  }
+];

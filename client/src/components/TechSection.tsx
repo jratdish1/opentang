@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Code, Cpu, FileCode, Lock, Layers, Zap } from "lucide-react";
-import { collectionStats } from "@/lib/nftData";
+import { Code, Cpu, FileCode, Lock, Layers, Zap, Coins, Store, Flame, Shield, Percent } from "lucide-react";
+import { collectionStats, v2ContractFeatures } from "@/lib/nftData";
 
 const CHAIN_BG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/n6wZKBCrhC57u7dtf5EHg8/chain_icons_bg-K6rNG6VesBWLT9YsaooKSf.webp";
 
@@ -11,8 +11,12 @@ const techSpecs = [
   { icon: Cpu, label: "Art Style", value: collectionStats.artStyle },
   { icon: FileCode, label: "Media Format", value: collectionStats.mediaFormat },
   { icon: Zap, label: "Resolution", value: collectionStats.resolution },
-  { icon: Lock, label: "Royalty", value: collectionStats.royalty },
+  { icon: Lock, label: "Contract", value: collectionStats.contractVersion },
 ];
+
+const featureIconMap: Record<string, React.ElementType> = {
+  Coins, Store, Flame, Lock, Shield, Percent
+};
 
 const chainDetails = {
   PulseChain: {
@@ -150,23 +154,55 @@ export default function TechSection() {
             </div>
           </motion.div>
 
-          {/* Smart Contract Info */}
+          {/* V2 Contract Features Grid */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-8 bg-card/40 border border-border/30 rounded-lg p-6"
+            className="mt-8"
           >
-            <h4 className="font-accent text-xs tracking-[0.3em] text-gold/80 uppercase mb-4">
-              Smart Contract Architecture
+            <h4 className="font-accent text-xs tracking-[0.3em] text-gold/80 uppercase mb-6 text-center">
+              V2 Smart Contract Features
             </h4>
-            <div className="font-mono text-xs text-muted-foreground space-y-1.5 overflow-x-auto">
-              <div><span className="text-gold">contract</span> HeroAnimatedNFT <span className="text-muted-foreground/60">is</span> ERC721, ERC2981, Ownable {"{"}</div>
-              <div className="pl-4"><span className="text-[#9333EA]">uint256</span> <span className="text-foreground">public</span> MAX_SUPPLY = <span className="text-[#3B82F6]">555</span>;</div>
-              <div className="pl-4"><span className="text-[#9333EA]">uint256</span> <span className="text-foreground">public</span> ROYALTY_BPS = <span className="text-[#3B82F6]">500</span>; <span className="text-muted-foreground/50">// 5%</span></div>
-              <div className="pl-4"><span className="text-gold">mapping</span>(<span className="text-[#9333EA]">uint256</span> =&gt; <span className="text-[#9333EA]">string</span>) <span className="text-foreground">public</span> animationURI;</div>
-              <div className="pl-4"><span className="text-gold">mapping</span>(<span className="text-[#9333EA]">address</span> =&gt; <span className="text-[#9333EA]">bool</span>) <span className="text-foreground">public</span> whitelisted;</div>
-              <div>{"}"}</div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              {v2ContractFeatures.map((feat, i) => {
+                const Icon = featureIconMap[feat.icon] || Code;
+                return (
+                  <motion.div
+                    key={feat.name}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.4, delay: 0.5 + i * 0.08 }}
+                    className="bg-card/60 border border-border/40 rounded-lg p-4 hover:border-[#C9A84C]/30 transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ backgroundColor: `${feat.color}20` }}>
+                        <Icon className="w-4 h-4" style={{ color: feat.color }} />
+                      </div>
+                      <span className="font-accent text-xs tracking-wider text-foreground font-semibold">{feat.name}</span>
+                    </div>
+                    <p className="text-xs font-body text-muted-foreground leading-relaxed">{feat.description}</p>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Smart Contract Code Snippet */}
+            <div className="bg-card/40 border border-border/30 rounded-lg p-6">
+              <h4 className="font-accent text-xs tracking-[0.3em] text-gold/80 uppercase mb-4">
+                Contract Architecture
+              </h4>
+              <div className="font-mono text-xs text-muted-foreground space-y-1.5 overflow-x-auto">
+                <div><span className="text-gold">contract</span> HeroNFTV2 <span className="text-muted-foreground/60">is</span> ERC721Upgradeable, ERC2981Upgradeable, UUPSUpgradeable {" {"}</div>
+                <div className="pl-4"><span className="text-[#9333EA]">uint256</span> <span className="text-foreground">public</span> MAX_SUPPLY = <span className="text-[#3B82F6]">555</span>;</div>
+                <div className="pl-4"><span className="text-[#9333EA]">uint256</span> <span className="text-foreground">public</span> REFLECTION_BPS = <span className="text-[#3B82F6]">200</span>; <span className="text-muted-foreground/50">// 2% to holders</span></div>
+                <div className="pl-4"><span className="text-[#9333EA]">uint256</span> <span className="text-foreground">public</span> BURN_BPS = <span className="text-[#3B82F6]">150</span>; <span className="text-muted-foreground/50">// 1.5% buy-and-burn</span></div>
+                <div className="pl-4"><span className="text-gold">mapping</span>(<span className="text-[#9333EA]">uint256</span> =&gt; Listing) <span className="text-foreground">public</span> marketplace;</div>
+                <div className="pl-4"><span className="text-gold">mapping</span>(<span className="text-[#9333EA]">address</span> =&gt; StakeInfo) <span className="text-foreground">public</span> stakes;</div>
+                <div className="pl-4"><span className="text-[#EF4444]">function</span> <span className="text-foreground">mint</span>() <span className="text-[#10B981]">external</span> payable <span className="text-muted-foreground/50">// triggers reflections</span></div>
+                <div className="pl-4"><span className="text-[#EF4444]">function</span> <span className="text-foreground">buyNFT</span>(uint256 tokenId) <span className="text-[#10B981]">external</span> payable <span className="text-muted-foreground/50">// buy-and-burn</span></div>
+                <div>{" }"}</div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
