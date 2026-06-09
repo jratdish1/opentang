@@ -28,6 +28,9 @@ export interface KeyframeNFT {
   status: "Ready for Animation";
 }
 
+// New CDN paths for the 6 additional animated NFTs (uploaded Jun 2026)
+export const NEW_CDN_BASE = "https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/n6wZKBCrhC57u7dtf5EHg8";
+
 export const animatedNFTs: AnimatedNFT[] = [
   {
     id: 1,
@@ -80,9 +83,88 @@ export const animatedNFTs: AnimatedNFT[] = [
     videoUrl: `${CDN_BASE}/mexico_cruz_roja_with_music_dddf75f1.mp4`,
     thumbnailUrl: `${CDN_BASE}/mexico_cruz_roja_first_18b422b0.png`,
     description: "Mexican Cruz Roja paramedic at an earthquake rescue scene. Red Cross uniform, spine board, Angel of Independence in the golden sunset distance."
+  },
+  {
+    id: 5,
+    name: "Japan Paramedic",
+    codename: "Sakura Response",
+    country: "Japan",
+    countryFlag: "🇯🇵",
+    category: "Medical",
+    rarity: "Rare",
+    chain: "BASE",
+    videoUrl: "/manus-storage/japan_paramedic_with_music_64f45a99.mp4",
+    thumbnailUrl: "/manus-storage/japan_paramedic_first_7525b092.png",
+    description: "Japanese paramedic responding to a Tokyo emergency. Pristine white uniform with red cross, Mount Fuji visible through the city skyline at dawn."
+  },
+  {
+    id: 6,
+    name: "Nigeria Military Medic",
+    codename: "Lagos Guardian",
+    country: "Nigeria",
+    countryFlag: "🇳🇬",
+    category: "Medical",
+    rarity: "Rare",
+    chain: "PulseChain",
+    videoUrl: "/manus-storage/nigeria_military_medic_with_music_415ae327.mp4",
+    thumbnailUrl: "/manus-storage/nigeria_military_medic_first_c2d929bd.png",
+    description: "Nigerian Army medical officer in olive drab uniform with red cross brassard. Lagos skyline and the Nigerian flag waving in the background."
+  },
+  {
+    id: 7,
+    name: "Brazil SAMU",
+    codename: "Amazonia Rescue",
+    country: "Brazil",
+    countryFlag: "🇧🇷",
+    category: "Medical",
+    rarity: "Rare",
+    chain: "BASE",
+    videoUrl: "/manus-storage/brazil_samu_with_music_48f00a78.mp4",
+    thumbnailUrl: "/manus-storage/brazil_samu_first_7a181b26.png",
+    description: "Brazilian SAMU paramedic in orange and white uniform. Christ the Redeemer statue silhouetted against a dramatic Rio de Janeiro sunset."
+  },
+  {
+    id: 8,
+    name: "Germany THW Rescue",
+    codename: "Rhine Defender",
+    country: "Germany",
+    countryFlag: "🇩🇪",
+    category: "Rescue",
+    rarity: "Rare",
+    chain: "Shared",
+    videoUrl: "/manus-storage/germany_thw_with_music_44f0b205.mp4",
+    thumbnailUrl: "/manus-storage/germany_thw_rescue_first_fcbabde7.png",
+    description: "German THW (Technisches Hilfswerk) rescue specialist in blue uniform. Cologne Cathedral towers behind a flood rescue operation on the Rhine."
+  },
+  {
+    id: 9,
+    name: "India NDRF",
+    codename: "Ganga Shield",
+    country: "India",
+    countryFlag: "🇮🇳",
+    category: "Rescue",
+    rarity: "Rare",
+    chain: "PulseChain",
+    videoUrl: "/manus-storage/india_ndrf_with_music_403f9548.mp4",
+    thumbnailUrl: "/manus-storage/india_female_doctor_first_fb0b039a.png",
+    description: "Indian NDRF (National Disaster Response Force) officer in khaki uniform. Taj Mahal silhouetted at golden hour during a flood relief operation."
+  },
+  {
+    id: 10,
+    name: "Australia USAR",
+    codename: "Outback Rescue",
+    country: "Australia",
+    countryFlag: "🇦🇺",
+    category: "Rescue",
+    rarity: "Rare",
+    chain: "BASE",
+    videoUrl: "/manus-storage/australia_usar_with_music_e4900e91.mp4",
+    thumbnailUrl: "/manus-storage/australia_paramedic_first_8dd4676b.png",
+    description: "Australian Urban Search & Rescue specialist in orange coveralls. Sydney Opera House and Harbour Bridge visible through the smoke of a rescue operation."
   }
 ];
 
+// All 10 NFTs are now fully animated — keyframeNFTs kept for backward compatibility
 export const keyframeNFTs: KeyframeNFT[] = [
   {
     id: 5,
@@ -262,12 +344,13 @@ export const roadmapPhases = [
 export const collectionStats = {
   totalSupply: 555,
   staticCards: 555,
+  animatedNFTs: 10,
   categories: 10,
   nations: 50,
   chains: ["PulseChain", "BASE"],
   artStyle: "Cartoon / Comic Book",
   mediaFormat: "MP4 Video (H.264 + AAC)",
-  resolution: "1080 × 1920",
+  resolution: "720 × 1280 (9:16 Portrait)",
   duration: "8s Looping",
   tokenStandard: "ERC-721",
   royalty: "5%",

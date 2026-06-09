@@ -1,7 +1,11 @@
+// $HERO Animated NFT Collection — CollectionSection Component
+// Design: "Heroes Hall of Honor" — Cinematic Blockbuster Showcase
+// All 10 animated NFTs now fully live — no "coming soon" section needed
+
 import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Play, Pause, Volume2, VolumeX, Flame, Heart, Swords, Wrench } from "lucide-react";
-import { animatedNFTs, keyframeNFTs, type AnimatedNFT } from "@/lib/nftData";
+import { Play, Pause, Volume2, VolumeX, Flame, Heart, Swords, Wrench, Globe } from "lucide-react";
+import { animatedNFTs, type AnimatedNFT } from "@/lib/nftData";
 
 const NAVY_BG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/n6wZKBCrhC57u7dtf5EHg8/navy_texture_bg-dFKR9hvA3CHGxGUNiDLPmM.webp";
 
@@ -21,9 +25,16 @@ const rarityColors: Record<string, string> = {
   Legendary: "#EF4444",
 };
 
+const chainColors: Record<string, string> = {
+  PulseChain: "#9D4EDD",
+  BASE: "#0052FF",
+  Shared: "#C9A84C",
+};
+
 function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
+  const [loaded, setLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-50px" });
@@ -33,7 +44,14 @@ function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
     if (playing) {
       videoRef.current.pause();
     } else {
-      videoRef.current.play();
+      videoRef.current.play().catch(() => {
+        // Autoplay blocked — try muted
+        if (videoRef.current) {
+          videoRef.current.muted = true;
+          setMuted(true);
+          videoRef.current.play();
+        }
+      });
     }
     setPlaying(!playing);
   };
@@ -45,22 +63,22 @@ function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
     setMuted(!muted);
   };
 
-  const Icon = categoryIcons[nft.category] || Flame;
+  const Icon = categoryIcons[nft.category] || Globe;
 
   return (
     <motion.div
       ref={cardRef}
       initial={{ opacity: 0, y: 50, rotateY: -5 }}
       animate={isInView ? { opacity: 1, y: 0, rotateY: 0 } : {}}
-      transition={{ duration: 0.7, delay: index * 0.15 }}
+      transition={{ duration: 0.7, delay: (index % 5) * 0.12 }}
       className="group relative"
     >
-      <div className="relative rounded-lg overflow-hidden bg-card border border-border hover:border-[#C9A84C]/50 transition-all duration-500 hover:shadow-[0_0_40px_oklch(0.75_0.12_85/0.15)]">
+      <div className="relative rounded-lg overflow-hidden bg-card border border-border hover:border-[#C9A84C]/60 transition-all duration-500 hover:shadow-[0_0_40px_oklch(0.75_0.12_85/0.18)]">
         {/* Gold corner accents */}
-        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#C9A84C]/60 z-10 rounded-tl-lg" />
-        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#C9A84C]/60 z-10 rounded-tr-lg" />
-        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#C9A84C]/60 z-10 rounded-bl-lg" />
-        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#C9A84C]/60 z-10 rounded-br-lg" />
+        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-[#C9A84C]/60 z-10 rounded-tl-lg pointer-events-none" />
+        <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-[#C9A84C]/60 z-10 rounded-tr-lg pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-[#C9A84C]/60 z-10 rounded-bl-lg pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-[#C9A84C]/60 z-10 rounded-br-lg pointer-events-none" />
 
         {/* Video / Thumbnail */}
         <div
@@ -74,24 +92,33 @@ function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
             loop
             muted={muted}
             playsInline
+            preload="metadata"
+            onLoadedData={() => setLoaded(true)}
+            onEnded={() => setPlaying(false)}
             className="w-full h-full object-cover"
           />
 
+          {/* Loading shimmer */}
+          {!loaded && (
+            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.15_0.02_260)] to-[oklch(0.20_0.03_260)] animate-pulse" />
+          )}
+
           {/* Play overlay */}
           {!playing && (
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/20 transition-colors">
-              <div className="w-14 h-14 rounded-full bg-[#C9A84C]/90 flex items-center justify-center shadow-lg">
-                <Play className="w-6 h-6 text-[oklch(0.12_0.02_260)] ml-1" />
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/15 transition-colors duration-300">
+              <div className="w-16 h-16 rounded-full bg-[#C9A84C]/90 flex items-center justify-center shadow-[0_0_30px_#C9A84C/50] group-hover:scale-110 transition-transform duration-300">
+                <Play className="w-7 h-7 text-[oklch(0.12_0.02_260)] ml-1" />
               </div>
             </div>
           )}
 
-          {/* Controls */}
+          {/* Controls when playing */}
           {playing && (
-            <div className="absolute bottom-3 right-3 flex gap-2 z-10">
+            <div className="absolute bottom-3 right-3 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
               <button
                 onClick={toggleMute}
-                className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+                className="w-8 h-8 rounded-full bg-black/70 flex items-center justify-center hover:bg-black/90 transition-colors"
+                aria-label={muted ? "Unmute" : "Mute"}
               >
                 {muted ? (
                   <VolumeX className="w-4 h-4 text-white" />
@@ -101,7 +128,8 @@ function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-                className="w-8 h-8 rounded-full bg-black/60 flex items-center justify-center hover:bg-black/80 transition-colors"
+                className="w-8 h-8 rounded-full bg-black/70 flex items-center justify-center hover:bg-black/90 transition-colors"
+                aria-label="Pause"
               >
                 <Pause className="w-4 h-4 text-white" />
               </button>
@@ -110,14 +138,17 @@ function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
 
           {/* Rarity badge */}
           <div
-            className="absolute top-3 left-3 px-3 py-1 rounded text-xs font-accent tracking-wider text-white z-10"
+            className="absolute top-3 left-3 px-3 py-1 rounded text-xs font-accent tracking-wider text-white z-10 shadow-md"
             style={{ backgroundColor: rarityColors[nft.rarity] }}
           >
             {nft.rarity.toUpperCase()}
           </div>
 
           {/* Chain badge */}
-          <div className="absolute top-3 right-3 px-2 py-1 rounded bg-black/60 text-[10px] font-accent tracking-wider text-gold-light z-10">
+          <div
+            className="absolute top-3 right-3 px-2 py-1 rounded text-[10px] font-accent tracking-wider text-white z-10 shadow-md"
+            style={{ backgroundColor: chainColors[nft.chain] + "CC" }}
+          >
             {nft.chain.toUpperCase()}
           </div>
         </div>
@@ -125,7 +156,7 @@ function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
         {/* Card Info */}
         <div className="p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">{nft.countryFlag}</span>
+            <span className="text-lg" role="img" aria-label={nft.country}>{nft.countryFlag}</span>
             <Icon className="w-4 h-4 text-gold" />
             <span className="text-xs font-accent tracking-wider text-muted-foreground uppercase">
               {nft.category}
@@ -140,47 +171,6 @@ function AnimatedNFTCard({ nft, index }: { nft: AnimatedNFT; index: number }) {
           <p className="mt-2 text-sm font-body text-muted-foreground leading-relaxed line-clamp-2">
             {nft.description}
           </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function KeyframeCard({ nft, index }: { nft: typeof keyframeNFTs[0]; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative"
-    >
-      <div className="relative rounded-lg overflow-hidden bg-card border border-border/50 hover:border-[#C9A84C]/30 transition-all duration-300">
-        <div className="relative aspect-[9/16] max-h-[320px] overflow-hidden">
-          <img
-            src={nft.thumbnailUrl}
-            alt={nft.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-          <div className="absolute bottom-3 left-3 right-3">
-            <div className="flex items-center gap-2">
-              <span className="text-base">{nft.countryFlag}</span>
-              <span className="text-xs font-accent tracking-wider text-gold-light">
-                {nft.category.toUpperCase()}
-              </span>
-            </div>
-            <h4 className="font-display text-sm font-semibold text-white mt-1">
-              {nft.name}
-            </h4>
-          </div>
-          {/* Status badge */}
-          <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-[#C9A84C]/20 border border-[#C9A84C]/40 text-[9px] font-accent tracking-wider text-gold-light">
-            COMING SOON
-          </div>
         </div>
       </div>
     </motion.div>
@@ -202,7 +192,7 @@ export default function CollectionSection() {
         backgroundPosition: "center",
       }}
     >
-      <div className="absolute inset-0 bg-[oklch(0.12_0.02_260/0.85)]" />
+      <div className="absolute inset-0 bg-[oklch(0.12_0.02_260/0.87)]" />
 
       <div className="relative z-10 container">
         {/* Section Header */}
@@ -213,44 +203,58 @@ export default function CollectionSection() {
           className="text-center mb-16"
         >
           <span className="font-accent text-sm tracking-[0.4em] text-gold/80 uppercase">
-            The Collection
+            The Complete Collection
           </span>
           <h2 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-foreground">
-            Animated <span className="gold-shimmer">Heroes</span>
+            10 Animated <span className="gold-shimmer">Heroes</span>
           </h2>
-          <p className="mt-4 max-w-xl mx-auto text-base font-body text-muted-foreground">
-            Each NFT is a looping animated video with patriotic orchestral music,
-            featuring heroes from around the world in bold cartoon style.
+          <p className="mt-4 max-w-2xl mx-auto text-base font-body text-muted-foreground">
+            Every NFT is a looping animated video with patriotic orchestral music,
+            honoring first responders and military heroes from 10 nations worldwide.
+            Bold cartoon style. 8-second loops. ERC-721 on PulseChain and BASE.
           </p>
+
+          {/* Stats bar */}
+          <div className="mt-8 flex flex-wrap justify-center gap-6 sm:gap-10">
+            {[
+              { label: "Nations", value: "10" },
+              { label: "Animated NFTs", value: "10" },
+              { label: "Format", value: "MP4 Loop" },
+              { label: "Chains", value: "PLS + BASE" },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-2xl font-display font-bold text-gold">{stat.value}</div>
+                <div className="text-xs font-accent tracking-wider text-muted-foreground uppercase mt-1">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </motion.div>
 
-        {/* Animated NFT Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Animated NFT Grid — 2 cols mobile, 3 cols tablet, 5 cols desktop */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
           {animatedNFTs.map((nft, i) => (
             <AnimatedNFTCard key={nft.id} nft={nft} index={i} />
           ))}
         </div>
 
-        {/* Coming Soon Section */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-20 text-center"
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="mt-16 text-center"
         >
-          <span className="font-accent text-sm tracking-[0.4em] text-gold/60 uppercase">
-            More Heroes Coming
-          </span>
-          <h3 className="mt-3 text-2xl sm:text-3xl font-display font-semibold text-foreground">
-            Ready for Animation
-          </h3>
+          <p className="font-accent text-sm tracking-[0.3em] text-gold/70 uppercase mb-4">
+            V2 Contract Deploying Soon
+          </p>
+          <a
+            href="#mint"
+            className="inline-flex items-center gap-3 px-8 py-4 rounded-lg bg-gradient-to-r from-[#C9A84C] to-[#E8C97A] text-[oklch(0.12_0.02_260)] font-accent font-bold tracking-wider text-sm uppercase hover:shadow-[0_0_40px_#C9A84C/40] transition-all duration-300 hover:scale-105"
+          >
+            <span>Join the Whitelist</span>
+            <span className="text-base">→</span>
+          </a>
         </motion.div>
-
-        <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          {keyframeNFTs.map((nft, i) => (
-            <KeyframeCard key={nft.id} nft={nft} index={i} />
-          ))}
-        </div>
       </div>
 
       {/* Bottom ribbon */}
