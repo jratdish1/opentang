@@ -5,6 +5,8 @@ import { publicProcedure, router } from "./_core/trpc";
 import { waitlistRouter } from "./routers/waitlist";
 import { adminRouter } from "./routers/admin";
 import { masterEmailsRouter } from "./routers/masterEmails";
+import { novaReignRouter } from "./routers/novaReign";
+import { valor1775Router } from "./routers/valor1775";
 
 export const appRouter = router({
   system: systemRouter,
@@ -19,6 +21,8 @@ export const appRouter = router({
   waitlist: waitlistRouter,
   admin: adminRouter,
   masterEmails: masterEmailsRouter,
+  novaReign: novaReignRouter,
+  valor1775: valor1775Router,
 });
 
 export type AppRouter = typeof appRouter;

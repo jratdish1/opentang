@@ -8,6 +8,20 @@
       "when": 1781073415006,
       "tag": "0000_green_korath",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1781079299053,
+      "tag": "0001_legal_princess_powerful",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1781080090782,
+      "tag": "0002_dry_magma",
+      "breakpoints": true
     }
   ]
 }

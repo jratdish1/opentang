@@ -2,10 +2,9 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// novareign.ai is the verified Resend sending domain (herobase.io requires plan upgrade)
-// Emails come from noreply@novareign.ai with reply-to herobase.io
-const FROM_EMAIL = "$HERO NFT <noreply@novareign.ai>";
-const REPLY_TO = "noreply@herobase.io";
+// herobase.io is verified on the paid Resend plan — sending from official domain
+const FROM_EMAIL = "$HERO NFT <noreply@herobase.io>";
+const REPLY_TO = "support@herobase.io";
 
 export async function sendVerificationEmail(
   toEmail: string,
