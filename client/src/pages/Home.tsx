@@ -10,6 +10,7 @@ import RoadmapSection from "@/components/RoadmapSection";
 import RevenueSection from "@/components/RevenueSection";
 import TechSection from "@/components/TechSection";
 import MintSection from "@/components/MintSection";
+import WaitlistSection from "@/components/WaitlistSection";
 import Footer from "@/components/Footer";
 
 export default function Home() {
@@ -23,6 +24,7 @@ export default function Home() {
       <RevenueSection />
       <TechSection />
       <MintSection />
+      <WaitlistSection />
       <Footer />
     </div>
   );

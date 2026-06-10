@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Roadmap", href: "#roadmap" },
   { label: "Revenue", href: "#revenue" },
   { label: "Tech", href: "#tech" },
+  { label: "Waitlist", href: "#waitlist" },
 ];
 
 export default function Navbar() {
