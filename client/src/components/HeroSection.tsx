@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronDown, Zap, Globe, Shield } from "lucide-react";
+import { ChevronDown, Zap, Globe, Shield, Mail } from "lucide-react";
 import { collectionStats } from "@/lib/nftData";
 
 const HERO_BG = "https://d2xsxph8kpxj0f.cloudfront.net/310519663472861536/n6wZKBCrhC57u7dtf5EHg8/hero_banner_bg-4VFsKsDE6rwY2sUoDhGmUf.webp";
@@ -96,8 +96,18 @@ export default function HeroSection() {
             EXPLORE COLLECTION
           </a>
           <a
+            href="#waitlist"
+            className="group relative px-8 py-4 font-accent text-base tracking-[0.2em] border-2 border-[#C9A84C] text-gold-light rounded overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_25px_oklch(0.75_0.12_85/0.35)]"
+          >
+            <span className="absolute inset-0 bg-[#C9A84C]/0 group-hover:bg-[#C9A84C]/15 transition-colors duration-300" />
+            <span className="relative flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              JOIN WAITLIST
+            </span>
+          </a>
+          <a
             href="#utility"
-            className="px-8 py-4 font-accent text-base tracking-[0.2em] border-2 border-[#C9A84C]/40 text-gold-light rounded hover:border-[#C9A84C] hover:bg-[#C9A84C]/10 transition-all duration-300"
+            className="px-8 py-4 font-accent text-base tracking-[0.2em] border-2 border-[#C9A84C]/30 text-gold-light/70 rounded hover:border-[#C9A84C]/60 hover:text-gold-light hover:bg-[#C9A84C]/5 transition-all duration-300"
           >
             VIEW UTILITY
           </a>

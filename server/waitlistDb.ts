@@ -1,14 +1,15 @@
-import { and, eq, gt } from "drizzle-orm";
+import { randomInt } from "crypto";
+import { and, count, eq } from "drizzle-orm";
 import { getDb } from "./db";
 import { emailOtps, waitlistSubscribers } from "../drizzle/schema";
 
 const OTP_EXPIRY_MINUTES = 10;
 const MAX_ATTEMPTS = 5;
+const MAX_OTP_REQUESTS_PER_HOUR = 3;
 
-/** Generate a cryptographically random 6-digit code */
+/** Generate a cryptographically secure 6-digit code (CSPRNG — not Math.random) */
 export function generateOtpCode(): string {
-  const digits = Math.floor(100000 + Math.random() * 900000);
-  return digits.toString();
+  return randomInt(100000, 1000000).toString();
 }
 
 /** Delete any existing OTP for this email, then insert a fresh one */
@@ -102,15 +103,15 @@ export async function isAlreadySubscribed(email: string): Promise<boolean> {
   return rows.length > 0;
 }
 
-/** Get total verified subscriber count */
+/** Get total verified subscriber count (uses SQL COUNT aggregate — no full scan) */
 export async function getSubscriberCount(): Promise<number> {
   const db = await getDb();
   if (!db) return 0;
 
   const rows = await db
-    .select({ id: waitlistSubscribers.id })
+    .select({ count: count() })
     .from(waitlistSubscribers)
     .where(eq(waitlistSubscribers.verified, true));
 
-  return rows.length;
+  return rows[0]?.count ?? 0;
 }

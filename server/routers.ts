@@ -3,6 +3,8 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { waitlistRouter } from "./routers/waitlist";
+import { adminRouter } from "./routers/admin";
+import { masterEmailsRouter } from "./routers/masterEmails";
 
 export const appRouter = router({
   system: systemRouter,
@@ -15,6 +17,8 @@ export const appRouter = router({
     }),
   }),
   waitlist: waitlistRouter,
+  admin: adminRouter,
+  masterEmails: masterEmailsRouter,
 });
 
 export type AppRouter = typeof appRouter;
