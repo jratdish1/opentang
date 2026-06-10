@@ -15,7 +15,7 @@ export default function RoadmapSection() {
     <section id="roadmap" ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <img src={ROADMAP_BG} alt="" className="w-full h-full object-cover" />
+        <img src={ROADMAP_BG} alt="$HERO NFT roadmap background — deployment timeline for the animated hero NFT collection" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.12_0.02_260/0.92)] via-[oklch(0.12_0.02_260/0.88)] to-[oklch(0.12_0.02_260/0.95)]" />
       </div>
 

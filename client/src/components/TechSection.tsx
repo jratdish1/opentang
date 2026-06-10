@@ -43,7 +43,7 @@ export default function TechSection() {
     <section id="tech" ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
       {/* Background accent */}
       <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
-        <img src={CHAIN_BG} alt="" className="w-full h-full object-cover" />
+        <img src={CHAIN_BG} alt="PulseChain and BASE blockchain logos — dual-chain deployment for $HERO NFT" className="w-full h-full object-cover" />
       </div>
 
       <div className="relative z-10 container">

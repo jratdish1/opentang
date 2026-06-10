@@ -17,7 +17,7 @@ export default function HeroSection() {
       <div className="absolute inset-0">
         <img
           src={HERO_BG}
-          alt=""
+          alt="$HERO NFT banner — animated first responder and military hero NFT collection on PulseChain and BASE"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.12_0.02_260/0.4)] via-[oklch(0.12_0.02_260/0.6)] to-[oklch(0.12_0.02_260)]" />

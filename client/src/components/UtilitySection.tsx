@@ -33,7 +33,7 @@ export default function UtilitySection() {
     <section id="utility" ref={sectionRef} className="relative py-24 sm:py-32 overflow-hidden">
       {/* Subtle medal texture in corner */}
       <div className="absolute top-0 right-0 w-96 h-96 opacity-[0.04] pointer-events-none">
-        <img src={MEDAL_BG} alt="" className="w-full h-full object-cover" />
+        <img src={MEDAL_BG} alt="Military service medal — honoring heroes in the $HERO NFT utility section" className="w-full h-full object-cover" />
       </div>
 
       <div className="relative z-10 container">
