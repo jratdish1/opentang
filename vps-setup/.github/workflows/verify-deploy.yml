@@ -1,0 +1,40 @@
+name: Verify Deployment Config
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'vps-setup/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'vps-setup/**'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify Script Syntax
+        run: bash -n vps-setup/contabo_vps_setup.sh
+
+      - name: Verify Config Files Exist
+        run: |
+          echo "Checking required files..."
+          test -f vps-setup/configs/.env.example && echo "  .env.example OK"
+          test -f vps-setup/configs/hardhat.config.js && echo "  hardhat.config.js OK"
+          test -f vps-setup/configs/foundry.toml && echo "  foundry.toml OK"
+          test -f vps-setup/configs/jail.local && echo "  jail.local OK"
+          test -f vps-setup/github_sync.sh && echo "  github_sync.sh OK"
+          echo "All config files verified."
+
+      - name: Verify Sync Script Syntax
+        run: bash -n vps-setup/github_sync.sh
