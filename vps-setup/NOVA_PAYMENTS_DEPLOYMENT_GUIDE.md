@@ -1,5 +1,20 @@
 # Nova Reign Telegram Stars Payment Handler — Deployment Guide
 
+## Server Info
+
+| Server | IP | Role | Status |
+|:---|:---|:---|:---|
+| **VDS-S** | `147.93.183.207` | AI trading agents + Nova payment handler | Target deployment host |
+
+## Bot Status (Verified)
+
+| Setting | Status |
+|:---|:---|
+| **Privacy Mode** | ✅ DISABLED — `can_read_all_group_messages: true` |
+| **Description** | ✅ Updated with Stars payment CTA |
+| **Short Description** | ✅ Updated |
+| **Secretary Mode** | ✅ Ready (requires group allowlist population) |
+
 This guide covers deploying the standalone Telegram Stars payment system for `novareign.ai` on **VDS-S**.
 
 ## Overview
