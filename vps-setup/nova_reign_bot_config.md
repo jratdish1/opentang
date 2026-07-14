@@ -1,7 +1,7 @@
 # Nova Reign Telegram Bot — Configuration & Secretary Mode
 
 **Bot**: @NOVA_REIGN_OFFICIAL_BOT  
-**Bot ID**: 8806957017  
+**Bot ID**: [BOT_ID_REDACTED]  
 **Status**: LIVE ✅  
 **Last Configured**: July 13, 2026  
 
