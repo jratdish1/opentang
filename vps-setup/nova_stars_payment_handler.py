@@ -280,6 +280,47 @@ def webhook():
             send_message(chat_id, "Refund Policy: Digital goods are non-refundable once accessed. Contact support for exceptions.")
         elif text == "/privacy":
             send_message(chat_id, "Privacy Policy: https://novareign.ai/privacy")
+        elif text.startswith("/tip") or text.startswith("/ppv"):
+            # Determine SKU based on command
+            sku_id = "tip_100" if text.startswith("/tip") else "ppv_video_1"
+            
+            with sqlite3.connect(DB_PATH) as conn:
+                sku = conn.cursor().execute("SELECT title, description, price_stars, is_active FROM sku_allowlist WHERE sku_id = ?", (sku_id,)).fetchone()
+                
+            if not sku or not sku[3]:
+                send_message(chat_id, "Sorry, that item is currently unavailable.")
+                return jsonify({"status": "ok"})
+                
+            title, description, price_stars, _ = sku
+            
+            # Generate internal order ID
+            import uuid
+            internal_order_id = f"ORDER_{uuid.uuid4().hex[:8].upper()}"
+            
+            # Create order in PENDING state
+            user_id = update["message"]["from"]["id"]
+            with sqlite3.connect(DB_PATH) as conn:
+                conn.cursor().execute(
+                    "INSERT INTO orders (internal_order_id, telegram_user_id, chat_id, sku_id, amount, payload, state) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    (internal_order_id, user_id, chat_id, sku_id, price_stars, internal_order_id, "PENDING")
+                )
+                conn.commit()
+                
+            # Send invoice via Telegram API
+            url = f"{TELEGRAM_API_URL}/sendInvoice"
+            payload = {
+                "chat_id": chat_id,
+                "title": title,
+                "description": description,
+                "payload": internal_order_id,
+                "provider_token": "", # Empty for Telegram Stars
+                "currency": "XTR",
+                "prices": [{"label": title, "amount": price_stars}]
+            }
+            try:
+                requests.post(url, json=payload, timeout=5)
+            except Exception as e:
+                logger.error(f"Failed to send invoice: {e}")
 
     return jsonify({"status": "ok"})
 

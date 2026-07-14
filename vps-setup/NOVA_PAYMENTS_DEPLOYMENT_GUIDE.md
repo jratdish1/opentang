@@ -1,5 +1,9 @@
 # Nova Reign Telegram Stars Payment Handler — Deployment Guide
 
+🚨 **VETS GO REQUIRED** 🚨
+**The following deployment steps require explicit authorization to proceed.**
+**DO NOT ACTIVATE LIVE WITHOUT EXPLICIT "VETS GO" COMMAND.**
+
 ## Server Info
 
 | Server | IP | Role | Status |
