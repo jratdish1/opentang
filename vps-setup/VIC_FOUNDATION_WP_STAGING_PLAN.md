@@ -1,7 +1,7 @@
 # VIC Foundation WP Staging Build Plan
 
 **Date:** 2026-07-14
-**Status:** APPROVED (VETS GO)
+**Status:** DRAFT — SECURITY AND LIVE VERIFICATION REQUIRED
 **Server:** VPS1 (`62.146.175.67`)
 **Target:** `staging.vicfoundation.com`
 

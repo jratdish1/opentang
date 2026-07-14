@@ -1,7 +1,7 @@
 # 1775 Valor Node/API/MCP Plan
 
 **Date:** 2026-07-14
-**Status:** APPROVED (VETS GO)
+**Status:** DRAFT — SECURITY AND LIVE VERIFICATION REQUIRED
 **Server:** VPS2 (`85.239.239.206`) / VPS1 (Fallback)
 **Target:** `1775valor.com`
 
